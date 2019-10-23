@@ -16,6 +16,8 @@ public class GameController : PersistableObject
     [SerializeField] 
     private KeyCode _spawnKey;
     [SerializeField] 
+    private KeyCode _destroyKey = KeyCode.X;
+    [SerializeField] 
     private KeyCode _newGameKey;
     [SerializeField] 
     private KeyCode _saveKey = KeyCode.S;
@@ -35,6 +37,11 @@ public class GameController : PersistableObject
         if (Input.GetKey(_spawnKey))
         {
             SpawnObject();
+        }
+
+        if (Input.GetKey(_destroyKey))
+        {
+            DestroyShape();
         }
         
         if (Input.GetKeyDown(_newGameKey))
@@ -64,6 +71,16 @@ public class GameController : PersistableObject
             alphaMin: 1f, alphaMax: 1f
         ));
         _shapes.Add(instance);
+    }
+    
+    private void DestroyShape () {
+        if (_shapes.Count > 0) {
+            int index = Random.Range(0, _shapes.Count);
+            Destroy(_shapes[index].gameObject);
+            int lastIndex = _shapes.Count - 1;
+            _shapes[index] = _shapes[lastIndex];
+            _shapes.RemoveAt(lastIndex);
+        }
     }
 
     private void NewGame()
