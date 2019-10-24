@@ -9,6 +9,7 @@ public class GameController : PersistableObject
     const int saveVersion = 3;
     
     public ShapeFactory ShapeFactory;
+    public float CreationSpeed { get; set; }
 
     [SerializeField] 
     private PersistentStorage _storage;
