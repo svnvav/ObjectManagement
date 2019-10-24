@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace DefaultNamespace
 {
@@ -10,10 +13,52 @@ namespace DefaultNamespace
         
         [SerializeField]
         private Material[] _materials;
+
+        [SerializeField] 
+        private bool _recycle;
         
-        public Shape Get (int shapeId = 0, int materialId = 0) {
-            Shape instance = Instantiate(_shapes[shapeId]);
-            instance.ShapeId = shapeId;
+        [NonSerialized]
+        private List<Shape>[] _pools;
+        
+        void CreatePools () {
+            _pools = new List<Shape>[_shapes.Length];
+            for (int i = 0; i < _pools.Length; i++) {
+                _pools[i] = new List<Shape>();
+            }
+        }
+        
+        
+        public Shape Get (int shapeId = 0, int materialId = 0)
+        {
+            Shape instance;
+            
+            if (_recycle) {
+                if (_pools == null) {
+                    CreatePools();
+                }
+                
+                List<Shape> pool = _pools[shapeId];
+                int lastIndex = pool.Count - 1;
+                
+
+                if (lastIndex >= 0) {
+                    instance = pool[lastIndex];
+                    pool.RemoveAt(lastIndex);
+                }
+                else {
+                    instance = Instantiate(_shapes[shapeId]);
+                    instance.ShapeId = shapeId;
+                }
+                
+                instance.gameObject.SetActive(true);
+            }
+            else
+            {
+                instance = Instantiate(_shapes[shapeId]);
+                instance.ShapeId = shapeId;
+            }
+            
+            
             instance.SetMaterial(_materials[materialId], materialId);
             return instance;
         }
@@ -23,6 +68,20 @@ namespace DefaultNamespace
                 Random.Range(0, _shapes.Length), 
                 Random.Range(0, _materials.Length)
                 );
+        }
+        
+        public void Reclaim (Shape shapeToRecycle) {
+            if (_recycle) {
+                if (_pools == null) {
+                    CreatePools();
+                }
+                _pools[shapeToRecycle.ShapeId].Add(shapeToRecycle);
+                shapeToRecycle.gameObject.SetActive(false);
+            }
+            else
+            {
+                Destroy(shapeToRecycle.gameObject);
+            }
         }
     }
 }

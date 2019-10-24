@@ -10,6 +10,7 @@ public class GameController : PersistableObject
     
     public ShapeFactory ShapeFactory;
     public float CreationSpeed { get; set; }
+    public float DestructionSpeed { get; set; }
 
     [SerializeField] 
     private PersistentStorage _storage;
@@ -26,18 +27,34 @@ public class GameController : PersistableObject
     private KeyCode _loadKey = KeyCode.L;
 
     private List<Shape> _shapes;
+    private float _creationProgress, _destructionProgress;
     
 
     private void Awake()
     {
+        _creationProgress = 0f;
         _shapes = new List<Shape>();
     }
     
     void Update()
     {
+        _creationProgress += Time.deltaTime * CreationSpeed;
+        while (_creationProgress >= 1f)
+        {
+            _creationProgress -= 1f;
+            SpawnShape();
+        }
+        
+        _destructionProgress += Time.deltaTime * DestructionSpeed;
+        while (_destructionProgress >= 1f)
+        {
+            _destructionProgress -= 1f;
+            DestroyShape();
+        }
+        
         if (Input.GetKey(_spawnKey))
         {
-            SpawnObject();
+            SpawnShape();
         }
 
         if (Input.GetKey(_destroyKey))
@@ -59,7 +76,7 @@ public class GameController : PersistableObject
         }
     }
 
-    private void SpawnObject()
+    private void SpawnShape()
     {
         var instance = ShapeFactory.GetRandom();
         instance.transform.localPosition = Random.insideUnitSphere * 5f;
@@ -77,7 +94,7 @@ public class GameController : PersistableObject
     private void DestroyShape () {
         if (_shapes.Count > 0) {
             int index = Random.Range(0, _shapes.Count);
-            Destroy(_shapes[index].gameObject);
+            ShapeFactory.Reclaim(_shapes[index]);
             int lastIndex = _shapes.Count - 1;
             _shapes[index] = _shapes[lastIndex];
             _shapes.RemoveAt(lastIndex);
@@ -88,7 +105,7 @@ public class GameController : PersistableObject
     {
         foreach (var instance in _shapes)
         {
-            Destroy(instance.gameObject);
+            ShapeFactory.Reclaim(instance);
         }
         
         _shapes.Clear();
