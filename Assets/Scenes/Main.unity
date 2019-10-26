@@ -96,7 +96,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
-  m_LightingDataAsset: {fileID: 112000004, guid: 52c44b8b5fd6e0e4fbf2c9747074846d,
+  m_LightingDataAsset: {fileID: 112000004, guid: 0d4a5efdb722d714a88bdaad25cc5ae0,
     type: 2}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -411,7 +411,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _shapeFactory: {fileID: 11400000, guid: 8649da16e305a5142b9ad6ce30ab6d8a, type: 2}
   _storage: {fileID: 1635401096}
-  _spawnZone: {fileID: 0}
   _spawnKey: 99
   _destroyKey: 120
   _newGameKey: 110
