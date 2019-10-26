@@ -3,13 +3,27 @@ using UnityEngine;
 
 namespace DefaultNamespace
 {
-    public class GameLevel : MonoBehaviour
+    public class GameLevel : PersistableObject
     {
+        public static GameLevel Current;
+        
         [SerializeField] private SpawnZone _spawnZone;
 
-        private void Start()
+        public Vector3 SpawnPoint => _spawnZone.SpawnPoint;
+
+        private void OnEnable()
         {
-            GameController.Instance.SpawnZoneOfALevel = _spawnZone;
+            Current = this;
+        }
+
+        public override void Save(GameDataWriter writer)
+        {
+            
+        }
+
+        public override void Load(GameDataReader reader)
+        {
+            
         }
     }
 }

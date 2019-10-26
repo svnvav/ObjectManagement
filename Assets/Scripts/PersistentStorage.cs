@@ -22,11 +22,10 @@ namespace DefaultNamespace
         }
 
         public void Load (PersistableObject o) {
-            using (
-                var reader = new BinaryReader(File.Open(_savePath, FileMode.Open))
-            ) {
-                o.Load(new GameDataReader(reader, -reader.ReadInt32()));
-            }
+            var data = File.ReadAllBytes(_savePath);
+            MemoryStream ms = new MemoryStream(data);
+            var reader = new BinaryReader(ms);
+            o.Load(new GameDataReader(reader, -reader.ReadInt32()));
         }
     }
 }

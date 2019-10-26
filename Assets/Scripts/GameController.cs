@@ -9,11 +9,7 @@ using Random = UnityEngine.Random;
 
 public class GameController : PersistableObject
 {
-    public static GameController Instance;
-    
-    const int saveVersion = 5;
-
-    public SpawnZone SpawnZoneOfALevel { get; set; }
+    const int saveVersion = 6;
     public float CreationSpeed { get; set; }
     public float DestructionSpeed { get; set; }
 
@@ -38,11 +34,6 @@ public class GameController : PersistableObject
         _mainRandomState = Random.state;
         _creationProgress = 0f;
         _shapes = new List<Shape>();
-    }
-
-    private void OnEnable()
-    {
-        Instance = this;
     }
 
     private void Start()
@@ -132,7 +123,7 @@ public class GameController : PersistableObject
     private void SpawnShape()
     {
         var instance = _shapeFactory.GetRandom();
-        instance.transform.localPosition = SpawnZoneOfALevel.SpawnPoint;
+        instance.transform.localPosition = GameLevel.Current.SpawnPoint;
         instance.transform.localRotation = Random.rotation;
         instance.transform.localScale = Random.value * Vector3.one;
         instance.SetColor(Random.ColorHSV(
@@ -173,9 +164,11 @@ public class GameController : PersistableObject
 
     public override void Save(GameDataWriter writer)
     {
-        writer.Write(_loadedLevelBuildIndex);
-        writer.Write(Random.state);
         writer.Write(_shapes.Count);
+        writer.Write(Random.state);
+        writer.Write(_loadedLevelBuildIndex);
+        GameLevel.Current.Save(writer);
+
         for (int i = 0; i < _shapes.Count; i++)
         {
             writer.Write(_shapes[i].ShapeId);
@@ -186,15 +179,23 @@ public class GameController : PersistableObject
 
     public override void Load(GameDataReader reader)
     {
-        int version = reader.Version;
+        var version = reader.Version;
         if (version > saveVersion)
         {
             Debug.LogError("Unsupported future save version " + version);
             return;
         }
-        
-        StartCoroutine(LoadLevel(version < 4 ? 1 : reader.ReadInt()));
 
+        StartCoroutine(LoadGame(reader));
+        
+    }
+
+    private IEnumerator LoadGame(GameDataReader reader)
+    {
+        var version = reader.Version;
+        
+        int count = version <= 0 ? -version : reader.ReadInt();
+        
         if (version >= 5)
         {
             var randomState = reader.ReadRandomState();
@@ -204,7 +205,11 @@ public class GameController : PersistableObject
             }
         }
         
-        int count = version <= 0 ? -version : reader.ReadInt();
+        yield return LoadLevel(version < 4 ? 1 : reader.ReadInt());
+        
+        if (version >= 6) {
+            GameLevel.Current.Load(reader);
+        }
 
         for (int i = 0; i < count; i++)
         {
