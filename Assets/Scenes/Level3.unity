@@ -461,6 +461,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e620395f335a47bc9f57f0485b39db22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _sequential: 1
   _spawnZones:
   - {fileID: 348638436}
   - {fileID: 2020737724}
