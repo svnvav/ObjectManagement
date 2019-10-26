@@ -409,6 +409,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bb189c88d9bbaf4e9cb0a8d66051d24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _creationSpeedSlider: {fileID: 967610148}
+  _destructionSpeedSlider: {fileID: 1617054112}
   _shapeFactory: {fileID: 11400000, guid: 8649da16e305a5142b9ad6ce30ab6d8a, type: 2}
   _storage: {fileID: 1635401096}
   _reseedOnLoad: 0
