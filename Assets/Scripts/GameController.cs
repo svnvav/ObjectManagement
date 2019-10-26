@@ -4,17 +4,20 @@ using System.Collections.Generic;
 using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class GameController : PersistableObject
 {
+    public static GameController Instance;
+    
     const int saveVersion = 4;
 
-    public ShapeFactory ShapeFactory;
-
+    public SpawnZone SpawnZoneOfALevel { get; set; }
     public float CreationSpeed { get; set; }
     public float DestructionSpeed { get; set; }
 
+    [SerializeField] private ShapeFactory _shapeFactory;
     [SerializeField] private PersistentStorage _storage;
 
     [SerializeField] private KeyCode _spawnKey;
@@ -31,6 +34,11 @@ public class GameController : PersistableObject
     {
         _creationProgress = 0f;
         _shapes = new List<Shape>();
+    }
+
+    private void OnEnable()
+    {
+        Instance = this;
     }
 
     private void Start()
@@ -117,8 +125,8 @@ public class GameController : PersistableObject
 
     private void SpawnShape()
     {
-        var instance = ShapeFactory.GetRandom();
-        instance.transform.localPosition = Random.insideUnitSphere * 5f;
+        var instance = _shapeFactory.GetRandom();
+        instance.transform.localPosition = SpawnZoneOfALevel.SpawnPoint;
         instance.transform.localRotation = Random.rotation;
         instance.transform.localScale = Random.value * Vector3.one;
         instance.SetColor(Random.ColorHSV(
@@ -135,7 +143,7 @@ public class GameController : PersistableObject
         if (_shapes.Count > 0)
         {
             int index = Random.Range(0, _shapes.Count);
-            ShapeFactory.Reclaim(_shapes[index]);
+            _shapeFactory.Reclaim(_shapes[index]);
             int lastIndex = _shapes.Count - 1;
             _shapes[index] = _shapes[lastIndex];
             _shapes.RemoveAt(lastIndex);
@@ -146,7 +154,7 @@ public class GameController : PersistableObject
     {
         foreach (var instance in _shapes)
         {
-            ShapeFactory.Reclaim(instance);
+            _shapeFactory.Reclaim(instance);
         }
 
         _shapes.Clear();
@@ -180,7 +188,7 @@ public class GameController : PersistableObject
         {
             var shapeId = version > 0 ? reader.ReadInt() : 0;
             var materialId = version > 1 ? reader.ReadInt() : 0;
-            Shape instance = ShapeFactory.Get(shapeId, materialId);
+            Shape instance = _shapeFactory.Get(shapeId, materialId);
             instance.Load(reader);
             _shapes.Add(instance);
         }
