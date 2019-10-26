@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3849023, g: 0.39734912, b: 0.38356343, a: 1}
+  m_IndirectSpecularColor: {r: 0.45110828, g: 0.49968457, b: 0.5674124, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -96,7 +96,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
-  m_LightingDataAsset: {fileID: 112000004, guid: 0d4a5efdb722d714a88bdaad25cc5ae0,
+  m_LightingDataAsset: {fileID: 112000004, guid: 83b3b35a716ad7141bf9631d803726a9,
     type: 2}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -411,6 +411,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _shapeFactory: {fileID: 11400000, guid: 8649da16e305a5142b9ad6ce30ab6d8a, type: 2}
   _storage: {fileID: 1635401096}
+  _reseedOnLoad: 0
   _spawnKey: 99
   _destroyKey: 120
   _newGameKey: 110

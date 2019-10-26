@@ -30,5 +30,15 @@ namespace DefaultNamespace
                 return _spawnZones[zoneIndex].SpawnPoint;
             }
         }
+        
+        public override void Save(GameDataWriter writer)
+        {
+            writer.Write(_nextSequentialIndex);
+        }
+
+        public override void Load(GameDataReader reader)
+        {
+            _nextSequentialIndex = reader.ReadInt();
+        }
     }
 }

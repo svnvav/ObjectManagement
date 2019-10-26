@@ -95,6 +95,7 @@ public class GameController : PersistableObject
         if (Input.GetKeyDown(_newGameKey))
         {
             NewGame();
+            StartCoroutine(LoadLevel(_loadedLevelBuildIndex));
         }
         else if (Input.GetKeyDown(_saveKey))
         {
