@@ -11,7 +11,7 @@ public class GameController : PersistableObject
 {
     public static GameController Instance;
     
-    const int saveVersion = 4;
+    const int saveVersion = 5;
 
     public SpawnZone SpawnZoneOfALevel { get; set; }
     public float CreationSpeed { get; set; }
@@ -20,18 +20,22 @@ public class GameController : PersistableObject
     [SerializeField] private ShapeFactory _shapeFactory;
     [SerializeField] private PersistentStorage _storage;
 
+    [SerializeField] private bool _reseedOnLoad;
+
     [SerializeField] private KeyCode _spawnKey;
     [SerializeField] private KeyCode _destroyKey = KeyCode.X;
     [SerializeField] private KeyCode _newGameKey;
     [SerializeField] private KeyCode _saveKey = KeyCode.S;
     [SerializeField] private KeyCode _loadKey = KeyCode.L;
-
+    
     private List<Shape> _shapes;
     private float _creationProgress, _destructionProgress;
     private int _loadedLevelBuildIndex;
+    private Random.State _mainRandomState;
 
     private void Awake()
     {
+        _mainRandomState = Random.state;
         _creationProgress = 0f;
         _shapes = new List<Shape>();
     }
@@ -43,6 +47,8 @@ public class GameController : PersistableObject
 
     private void Start()
     {
+        NewGame();
+        
 #if UNITY_EDITOR
         for (int i = 0; i < SceneManager.sceneCount; i++)
         {
@@ -152,6 +158,11 @@ public class GameController : PersistableObject
 
     private void NewGame()
     {
+        Random.state = _mainRandomState;
+        int seed = Random.Range(0, int.MaxValue) ^ (int)Time.unscaledTime;
+        _mainRandomState = Random.state;
+        Random.InitState(seed);
+
         foreach (var instance in _shapes)
         {
             _shapeFactory.Reclaim(instance);
@@ -163,6 +174,7 @@ public class GameController : PersistableObject
     public override void Save(GameDataWriter writer)
     {
         writer.Write(_loadedLevelBuildIndex);
+        writer.Write(Random.state);
         writer.Write(_shapes.Count);
         for (int i = 0; i < _shapes.Count; i++)
         {
@@ -182,6 +194,16 @@ public class GameController : PersistableObject
         }
         
         StartCoroutine(LoadLevel(version < 4 ? 1 : reader.ReadInt()));
+
+        if (version >= 5)
+        {
+            var randomState = reader.ReadRandomState();
+            if (!_reseedOnLoad)
+            {
+                Random.state = randomState;
+            }
+        }
+        
         int count = version <= 0 ? -version : reader.ReadInt();
 
         for (int i = 0; i < count; i++)

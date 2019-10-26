@@ -39,5 +39,9 @@ namespace DefaultNamespace
             _writer.Write(value.b);
             _writer.Write(value.a);
         }
+        
+        public void Write (Random.State value) {
+            _writer.Write(JsonUtility.ToJson(value));
+        }
     }
 }
