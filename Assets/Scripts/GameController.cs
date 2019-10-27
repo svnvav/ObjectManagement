@@ -135,16 +135,7 @@ public class GameController : PersistableObject
     private void SpawnShape()
     {
         var instance = _shapeFactory.GetRandom();
-        instance.AngularVelocity = Random.onUnitSphere * Random.Range(0, 90);
-        instance.transform.localPosition = GameLevel.Current.SpawnPoint;
-        instance.transform.localRotation = Random.rotation;
-        instance.transform.localScale = Random.value * Vector3.one;
-        instance.SetColor(Random.ColorHSV(
-            hueMin: 0f, hueMax: 1f,
-            saturationMin: 0.5f, saturationMax: 1f,
-            valueMin: 0.25f, valueMax: 1f,
-            alphaMin: 1f, alphaMax: 1f
-        ));
+        GameLevel.Current.ConfigureSpawn(instance);
         _shapes.Add(instance);
     }
 

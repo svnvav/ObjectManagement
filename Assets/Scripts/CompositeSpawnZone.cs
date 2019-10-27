@@ -30,7 +30,24 @@ namespace DefaultNamespace
                 return _spawnZones[zoneIndex].SpawnPoint;
             }
         }
-        
+
+        public override void ConfigureSpawn(Shape shape)
+        {
+            int zoneIndex;
+
+            if (_sequential)
+            {
+                zoneIndex = _nextSequentialIndex++;
+                _nextSequentialIndex = _nextSequentialIndex % _spawnZones.Length;
+            }
+            else
+            {
+                zoneIndex = Random.Range(0, _spawnZones.Length);
+            }
+
+            _spawnZones[zoneIndex].ConfigureSpawn(shape);
+        }
+
         public override void Save(GameDataWriter writer)
         {
             writer.Write(_nextSequentialIndex);

@@ -11,8 +11,6 @@ namespace DefaultNamespace
 
         [SerializeField] private PersistableObject[] _persistentObjects;
 
-        public Vector3 SpawnPoint => _spawnZone.SpawnPoint;
-
         private void OnEnable()
         {
             Current = this;
@@ -20,6 +18,10 @@ namespace DefaultNamespace
             {
                 _persistentObjects = new PersistableObject[0];
             }
+        }
+        
+        public void ConfigureSpawn (Shape shape) {
+            _spawnZone.ConfigureSpawn(shape);
         }
 
         public override void Save(GameDataWriter writer)
