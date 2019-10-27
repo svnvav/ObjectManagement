@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
-namespace DefaultNamespace
+namespace Catlike.ObjectManagement
 {
     [CreateAssetMenu]
     public class ShapeFactory : ScriptableObject

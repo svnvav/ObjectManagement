@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Experimental.PlayerLoop;
 
-namespace DefaultNamespace
+namespace Catlike.ObjectManagement
 {
     public class Shape : PersistableObject
     {

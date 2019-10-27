@@ -2,7 +2,7 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace DefaultNamespace
+namespace Catlike.ObjectManagement
 {
     public class CubeSpawnZone : SpawnZone
     {

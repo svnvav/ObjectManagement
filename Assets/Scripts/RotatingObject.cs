@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace DefaultNamespace
+namespace Catlike.ObjectManagement
 {
     public class RotatingObject : PersistableObject
     {

@@ -1,9 +1,9 @@
 using UnityEngine;
 
-namespace DefaultNamespace
+namespace Catlike.ObjectManagement
 {
     [System.Serializable]
-    public class FloatRange
+    public struct FloatRange
     {
         public float min, max;
 

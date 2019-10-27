@@ -169,6 +169,22 @@ MonoBehaviour:
     speed:
       min: 0
       max: 0
+    angularSpeed:
+      min: 0
+      max: 0
+    scale:
+      min: 0
+      max: 0
+    color:
+      hue:
+        min: 0
+        max: 0
+      saturation:
+        min: 0
+        max: 0
+      value:
+        min: 0
+        max: 0
   _surfaceOnly: 0
 --- !u!1 &874861197
 GameObject:
@@ -355,6 +371,22 @@ MonoBehaviour:
     speed:
       min: 0
       max: 0
+    angularSpeed:
+      min: 0
+      max: 0
+    scale:
+      min: 0
+      max: 0
+    color:
+      hue:
+        min: 0
+        max: 0
+      saturation:
+        min: 0
+        max: 0
+      value:
+        min: 0
+        max: 0
   _surfaceOnly: 0
 --- !u!1 &1836885535
 GameObject:
@@ -404,6 +436,22 @@ MonoBehaviour:
     speed:
       min: 0
       max: 0
+    angularSpeed:
+      min: 0
+      max: 0
+    scale:
+      min: 0
+      max: 0
+    color:
+      hue:
+        min: 0
+        max: 0
+      saturation:
+        min: 0
+        max: 0
+      value:
+        min: 0
+        max: 0
   _surfaceOnly: 1
 --- !u!1 &2020737722
 GameObject:
@@ -453,6 +501,22 @@ MonoBehaviour:
     speed:
       min: 0
       max: 0
+    angularSpeed:
+      min: 0
+      max: 0
+    scale:
+      min: 0
+      max: 0
+    color:
+      hue:
+        min: 0
+        max: 0
+      saturation:
+        min: 0
+        max: 0
+      value:
+        min: 0
+        max: 0
   _surfaceOnly: 1
 --- !u!1 &2062887174
 GameObject:
@@ -488,6 +552,22 @@ MonoBehaviour:
     speed:
       min: 2
       max: 3
+    angularSpeed:
+      min: 0
+      max: 90
+    scale:
+      min: 0
+      max: 0
+    color:
+      hue:
+        min: 0
+        max: 0
+      saturation:
+        min: 0
+        max: 0
+      value:
+        min: 0
+        max: 0
   _sequential: 1
   _spawnZones:
   - {fileID: 348638436}

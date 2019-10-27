@@ -2,7 +2,7 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace DefaultNamespace
+namespace Catlike.ObjectManagement
 {
     public abstract class SpawnZone : PersistableObject
     {
@@ -20,6 +20,9 @@ namespace DefaultNamespace
             public MovementDirection movementDirection;
 
             public FloatRange speed;
+            public FloatRange angularSpeed;
+            public FloatRange scale;
+            public ColorRangeHSV color;
         }
 
         public abstract Vector3 SpawnPoint { get; }
@@ -33,14 +36,9 @@ namespace DefaultNamespace
             Transform t = shape.transform;
             t.localPosition = SpawnPoint;
             t.localRotation = Random.rotation;
-            t.localScale = Vector3.one * Random.Range(0.1f, 1f);
-            shape.SetColor(Random.ColorHSV(
-                hueMin: 0f, hueMax: 1f,
-                saturationMin: 0.5f, saturationMax: 1f,
-                valueMin: 0.25f, valueMax: 1f,
-                alphaMin: 1f, alphaMax: 1f
-            ));
-            shape.AngularVelocity = Random.onUnitSphere * Random.Range(0f, 90f);
+            t.localScale = Vector3.one * _config.scale.RandomValueInRange;
+            shape.SetColor(_config.color.RandomInRange);
+            shape.AngularVelocity = Random.onUnitSphere * _config.angularSpeed.RandomValueInRange;
 
             Vector3 direction;
             switch (_config.movementDirection)
