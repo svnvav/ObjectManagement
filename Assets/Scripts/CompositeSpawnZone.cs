@@ -8,6 +8,7 @@ namespace DefaultNamespace
     {
         [SerializeField] private bool _sequential;
         [SerializeField] private SpawnZone[] _spawnZones;
+        [SerializeField] private bool _overrideConfig;
 
         [NonSerialized] private int _nextSequentialIndex;
         
@@ -33,19 +34,27 @@ namespace DefaultNamespace
 
         public override void ConfigureSpawn(Shape shape)
         {
-            int zoneIndex;
-
-            if (_sequential)
+            if (_overrideConfig)
             {
-                zoneIndex = _nextSequentialIndex++;
-                _nextSequentialIndex = _nextSequentialIndex % _spawnZones.Length;
+                base.ConfigureSpawn(shape);
             }
             else
             {
-                zoneIndex = Random.Range(0, _spawnZones.Length);
-            }
 
-            _spawnZones[zoneIndex].ConfigureSpawn(shape);
+                int zoneIndex;
+
+                if (_sequential)
+                {
+                    zoneIndex = _nextSequentialIndex++;
+                    _nextSequentialIndex = _nextSequentialIndex % _spawnZones.Length;
+                }
+                else
+                {
+                    zoneIndex = Random.Range(0, _spawnZones.Length);
+                }
+
+                _spawnZones[zoneIndex].ConfigureSpawn(shape);
+            }
         }
 
         public override void Save(GameDataWriter writer)

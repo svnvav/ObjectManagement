@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spawnZone: {fileID: 2062887175}
+  _persistentObjects: []
 --- !u!4 &874861199
 Transform:
   m_ObjectHideFlags: 0
@@ -285,6 +286,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c0e5d195bfa4775a6910a3910957d87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _config:
+    movementDirection: 1
+    speed:
+      min: 1.5
+      max: 2.5
   _surfaceOnly: 1
 --- !u!4 &2062887176
 Transform:

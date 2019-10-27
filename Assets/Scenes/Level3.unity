@@ -145,13 +145,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 348638434}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0.37294674, y: -0, z: -0, w: 0.9278528}
   m_LocalPosition: {x: 1.56, y: -1.05, z: -1.79}
   m_LocalScale: {x: 3, y: 2, z: 2}
   m_Children: []
   m_Father: {fileID: 2062887176}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -43.795002, y: 0, z: 0}
 --- !u!114 &348638436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,6 +164,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cff162591444789829b988f61b780d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _config:
+    movementDirection: 0
+    speed:
+      min: 0
+      max: 0
   _surfaceOnly: 0
 --- !u!1 &874861197
 GameObject:
@@ -345,6 +350,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c0e5d195bfa4775a6910a3910957d87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _config:
+    movementDirection: 0
+    speed:
+      min: 0
+      max: 0
   _surfaceOnly: 0
 --- !u!1 &1836885535
 GameObject:
@@ -389,6 +399,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c0e5d195bfa4775a6910a3910957d87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _config:
+    movementDirection: 0
+    speed:
+      min: 0
+      max: 0
   _surfaceOnly: 1
 --- !u!1 &2020737722
 GameObject:
@@ -433,6 +448,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cff162591444789829b988f61b780d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _config:
+    movementDirection: 0
+    speed:
+      min: 0
+      max: 0
   _surfaceOnly: 1
 --- !u!1 &2062887174
 GameObject:
@@ -463,12 +483,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e620395f335a47bc9f57f0485b39db22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _config:
+    movementDirection: 0
+    speed:
+      min: 2
+      max: 3
   _sequential: 1
   _spawnZones:
   - {fileID: 348638436}
   - {fileID: 2020737724}
   - {fileID: 1522032010}
   - {fileID: 1836885537}
+  _overrideConfig: 1
 --- !u!4 &2062887176
 Transform:
   m_ObjectHideFlags: 0
