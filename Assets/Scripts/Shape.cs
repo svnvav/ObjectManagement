@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.Experimental.PlayerLoop;
 
 namespace DefaultNamespace
 {
@@ -28,11 +30,18 @@ namespace DefaultNamespace
                 }
             }
         }
+        
+        public Vector3 AngularVelocity { get; set; }
 
         void Awake () {
             _meshRenderer = GetComponent<MeshRenderer>();
         }
-        
+
+        public void GameUpdate()
+        {
+            transform.Rotate(AngularVelocity * Time.deltaTime);
+        }
+
         public void SetMaterial (Material material, int materialId) {
             _meshRenderer.material = material;
             MaterialId = materialId;
@@ -52,11 +61,13 @@ namespace DefaultNamespace
         public override void Save (GameDataWriter writer) {
             base.Save(writer);
             writer.Write(_color);
+            writer.Write(AngularVelocity);
         }
 
         public override void Load (GameDataReader reader) {
             base.Load(reader);
             SetColor(reader.Version > 2 ? reader.ReadColor() : Color.white);
+            AngularVelocity = reader.Version >= 7 ? reader.ReadVector3() : Vector3.zero;
         }
     }
 }

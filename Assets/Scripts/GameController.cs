@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 
 public class GameController : PersistableObject
 {
-    const int saveVersion = 6;
+    const int saveVersion = 7;
     public float CreationSpeed { get; set; }
     public float DestructionSpeed { get; set; }
 
@@ -98,6 +98,11 @@ public class GameController : PersistableObject
 
     private void FixedUpdate()
     {
+        foreach (var shape in _shapes)
+        {
+            shape.GameUpdate();
+        }
+        
         _creationProgress += Time.deltaTime * CreationSpeed;
         while (_creationProgress >= 1f)
         {
@@ -130,6 +135,7 @@ public class GameController : PersistableObject
     private void SpawnShape()
     {
         var instance = _shapeFactory.GetRandom();
+        instance.AngularVelocity = Random.onUnitSphere * Random.Range(0, 90);
         instance.transform.localPosition = GameLevel.Current.SpawnPoint;
         instance.transform.localRotation = Random.rotation;
         instance.transform.localScale = Random.value * Vector3.one;
