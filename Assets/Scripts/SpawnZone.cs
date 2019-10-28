@@ -23,6 +23,8 @@ namespace Catlike.ObjectManagement
             public FloatRange angularSpeed;
             public FloatRange scale;
             public ColorRangeHSV color;
+
+            public bool uniformColor;
         }
 
         public abstract Vector3 SpawnPoint { get; }
@@ -37,7 +39,18 @@ namespace Catlike.ObjectManagement
             t.localPosition = SpawnPoint;
             t.localRotation = Random.rotation;
             t.localScale = Vector3.one * _config.scale.RandomValueInRange;
-            shape.SetColor(_config.color.RandomInRange);
+            if (_config.uniformColor)
+            {
+                shape.SetColor(_config.color.RandomInRange);
+            }
+            else
+            {
+                for (int i = 0; i < shape.ColorCount; i++)
+                {
+                    shape.SetColor(_config.color.RandomInRange, i);
+                }
+            }
+            
             shape.AngularVelocity = Random.onUnitSphere * _config.angularSpeed.RandomValueInRange;
 
             Vector3 direction;

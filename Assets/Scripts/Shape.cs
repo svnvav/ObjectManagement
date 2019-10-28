@@ -8,12 +8,13 @@ namespace Catlike.ObjectManagement
     {
         private static int colorPropertyId = Shader.PropertyToID("_Color");
         private static MaterialPropertyBlock sharedPropertyBlock;
+
+        [SerializeField]
+        private MeshRenderer[] _meshRenderers;
         
         private int _shapeId = int.MinValue;
         
-        private MeshRenderer _meshRenderer;
-        
-        private Color _color;
+        private Color[] _colors;
         
         public int MaterialId { get; private set; }
         
@@ -31,11 +32,14 @@ namespace Catlike.ObjectManagement
             }
         }
         
+        public int ColorCount => _colors.Length;
+
         public Vector3 AngularVelocity { get; set; }
         public Vector3 Velocity { get; set; }
 
-        void Awake () {
-            _meshRenderer = GetComponent<MeshRenderer>();
+        private void Awake()
+        {
+            _colors = new Color[_meshRenderers.Length];
         }
 
         public void GameUpdate()
@@ -45,33 +49,84 @@ namespace Catlike.ObjectManagement
         }
 
         public void SetMaterial (Material material, int materialId) {
-            _meshRenderer.material = material;
+            foreach (var meshRenderer in _meshRenderers)
+            {
+                meshRenderer.material = material;
+            }
             MaterialId = materialId;
         }
         
         public void SetColor (Color color)
         {
-            _color = color;
+            for (int i = 0; i < _colors.Length; i++)
+            {
+                _colors[i] = color;
+            }
             
             if (sharedPropertyBlock == null) {
                 sharedPropertyBlock = new MaterialPropertyBlock();
             }
             sharedPropertyBlock.SetColor(colorPropertyId, color);
-            _meshRenderer.SetPropertyBlock(sharedPropertyBlock);
+            
+            foreach (var meshRenderer in _meshRenderers)
+            {
+                meshRenderer.SetPropertyBlock(sharedPropertyBlock);
+            }
+        }
+        
+        public void SetColor (Color color, int index) {
+            if (sharedPropertyBlock == null) {
+                sharedPropertyBlock = new MaterialPropertyBlock();
+            }
+            sharedPropertyBlock.SetColor(colorPropertyId, color);
+            _colors[index] = color;
+            _meshRenderers[index].SetPropertyBlock(sharedPropertyBlock);
         }
         
         public override void Save (GameDataWriter writer) {
             base.Save(writer);
-            writer.Write(_color);
+            writer.Write(_colors.Length);
+            for (int i = 0; i < _colors.Length; i++) {
+                writer.Write(_colors[i]);
+            }
             writer.Write(AngularVelocity);
             writer.Write(Velocity);
         }
 
         public override void Load (GameDataReader reader) {
             base.Load(reader);
-            SetColor(reader.Version > 2 ? reader.ReadColor() : Color.white);
+            if (reader.Version >= 8)
+            {
+                LoadColors(reader);
+            }
+            else
+            {
+                SetColor(reader.Version > 2 ? reader.ReadColor() : Color.white);
+            }
+            
             AngularVelocity = reader.Version >= 7 ? reader.ReadVector3() : Vector3.zero;
             Velocity = reader.Version >= 7 ? reader.ReadVector3() : Vector3.zero;
+        }
+
+        private void LoadColors(GameDataReader reader)
+        {
+            int count = reader.ReadInt();
+            int max = count <= _colors.Length ? count : _colors.Length;
+            int i = 0;
+            for (; i < max; i++) {
+                SetColor(reader.ReadColor(), i);
+            }
+            if (count > _colors.Length) {
+                for (; i < count; i++) {
+                    reader.ReadColor();
+                }
+            }
+            else if (count < _colors.Length) {
+                for (; i < _colors.Length; i++) {
+                    SetColor(Color.white, i);
+                }
+            }
+            
         }
     }
 }
