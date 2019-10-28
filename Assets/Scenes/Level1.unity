@@ -151,6 +151,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _config:
+    factories:
+    - {fileID: 11400000, guid: be7c81b46f03ebe4a90f136aa6fe92b2, type: 2}
     movementDirection: 0
     speed:
       min: 0

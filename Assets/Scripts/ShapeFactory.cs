@@ -10,6 +10,25 @@ namespace Catlike.ObjectManagement
     [CreateAssetMenu]
     public class ShapeFactory : ScriptableObject
     {
+        [NonSerialized]
+        private int _factoryId = int.MinValue;
+
+        public int FactoryId
+        {
+            get => _factoryId;
+            set
+            {
+                if (_factoryId == int.MinValue && value != int.MinValue)
+                {
+                    _factoryId = value;
+                }
+                else
+                {
+                    Debug.Log("Not allowed to change factoryId." + value);
+                }
+            }
+        }
+
         [SerializeField] private Shape[] _shapes;
 
         [SerializeField] private Material[] _materials;
@@ -71,6 +90,7 @@ namespace Catlike.ObjectManagement
                 else
                 {
                     instance = Instantiate(_shapes[shapeId]);
+                    instance.OriginFactory = this;
                     instance.ShapeId = shapeId;
                     SceneManager.MoveGameObjectToScene(instance.gameObject, _poolScene);
                 }
@@ -82,7 +102,7 @@ namespace Catlike.ObjectManagement
                 instance = Instantiate(_shapes[shapeId]);
                 instance.ShapeId = shapeId;
             }
-
+            
             instance.SetMaterial(_materials[materialId], materialId);
 
             return instance;
@@ -98,6 +118,11 @@ namespace Catlike.ObjectManagement
 
         public void Reclaim(Shape shapeToRecycle)
         {
+            if (shapeToRecycle.OriginFactory != this) {
+                Debug.LogError("Tried to reclaim shape with wrong factory.");
+                return;
+            }
+            
             if (_recycle)
             {
                 if (_pools == null)

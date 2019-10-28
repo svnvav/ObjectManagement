@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Catlike.ObjectManagement;
@@ -16,7 +17,7 @@ public class GameController : PersistableObject
     [SerializeField] Slider _creationSpeedSlider;
     [SerializeField] Slider _destructionSpeedSlider;
     
-    [SerializeField] private ShapeFactory _shapeFactory;
+    [SerializeField] private ShapeFactory[] _shapeFactories;
     [SerializeField] private PersistentStorage _storage;
 
     [SerializeField] private bool _reseedOnLoad;
@@ -37,6 +38,17 @@ public class GameController : PersistableObject
         _mainRandomState = Random.state;
         _creationProgress = 0f;
         _shapes = new List<Shape>();
+    }
+
+    private void OnEnable()
+    {
+        if (_shapeFactories[0].FactoryId != 0)
+        {
+            for (int i = 0; i < _shapeFactories.Length; i++)
+            {
+                _shapeFactories[i].FactoryId = i;
+            }
+        }
     }
 
     private void Start()
@@ -134,9 +146,7 @@ public class GameController : PersistableObject
 
     private void SpawnShape()
     {
-        var instance = _shapeFactory.GetRandom();
-        GameLevel.Current.ConfigureSpawn(instance);
-        _shapes.Add(instance);
+        _shapes.Add(GameLevel.Current.SpawnShape());
     }
 
     private void DestroyShape()
@@ -144,7 +154,7 @@ public class GameController : PersistableObject
         if (_shapes.Count > 0)
         {
             int index = Random.Range(0, _shapes.Count);
-            _shapeFactory.Reclaim(_shapes[index]);
+            _shapes[index].Recycle();
             int lastIndex = _shapes.Count - 1;
             _shapes[index] = _shapes[lastIndex];
             _shapes.RemoveAt(lastIndex);
@@ -163,7 +173,7 @@ public class GameController : PersistableObject
 
         foreach (var instance in _shapes)
         {
-            _shapeFactory.Reclaim(instance);
+            instance.Recycle();
         }
 
         _shapes.Clear();
@@ -182,6 +192,7 @@ public class GameController : PersistableObject
 
         for (int i = 0; i < _shapes.Count; i++)
         {
+            writer.Write(_shapes[i].OriginFactory.FactoryId);
             writer.Write(_shapes[i].ShapeId);
             writer.Write(_shapes[i].MaterialId);
             _shapes[i].Save(writer);
@@ -229,9 +240,10 @@ public class GameController : PersistableObject
 
         for (int i = 0; i < count; i++)
         {
+            int factoryId = version >= 8 ? reader.ReadInt() : 0;
             var shapeId = version > 0 ? reader.ReadInt() : 0;
             var materialId = version > 1 ? reader.ReadInt() : 0;
-            Shape instance = _shapeFactory.Get(shapeId, materialId);
+            Shape instance = _shapeFactories[factoryId].Get(shapeId, materialId);
             instance.Load(reader);
             _shapes.Add(instance);
         }

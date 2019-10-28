@@ -13,11 +13,6 @@ namespace Catlike.ObjectManagement
         private MeshRenderer[] _meshRenderers;
         
         private int _shapeId = int.MinValue;
-        
-        private Color[] _colors;
-        
-        public int MaterialId { get; private set; }
-        
         public int ShapeId {
             get {
                 return _shapeId;
@@ -32,7 +27,26 @@ namespace Catlike.ObjectManagement
             }
         }
         
+        public int MaterialId { get; private set; }
+        
+        private Color[] _colors;
         public int ColorCount => _colors.Length;
+
+        private ShapeFactory _originFactory;
+
+        public ShapeFactory OriginFactory
+        {
+            get => _originFactory;
+            set
+            {
+                if (_originFactory == null) {
+                    _originFactory = value;
+                }
+                else {
+                    Debug.LogError("Not allowed to change origin factory.");
+                }
+            }
+        }
 
         public Vector3 AngularVelocity { get; set; }
         public Vector3 Velocity { get; set; }
@@ -81,6 +95,10 @@ namespace Catlike.ObjectManagement
             sharedPropertyBlock.SetColor(colorPropertyId, color);
             _colors[index] = color;
             _meshRenderers[index].SetPropertyBlock(sharedPropertyBlock);
+        }
+        
+        public void Recycle () {
+            OriginFactory.Reclaim(this);
         }
         
         public override void Save (GameDataWriter writer) {

@@ -32,15 +32,14 @@ namespace Catlike.ObjectManagement
             }
         }
 
-        public override void ConfigureSpawn(Shape shape)
+        public override Shape SpawnShape()
         {
             if (_overrideConfig)
             {
-                base.ConfigureSpawn(shape);
+                return base.SpawnShape();
             }
             else
             {
-
                 int zoneIndex;
 
                 if (_sequential)
@@ -53,7 +52,7 @@ namespace Catlike.ObjectManagement
                     zoneIndex = Random.Range(0, _spawnZones.Length);
                 }
 
-                _spawnZones[zoneIndex].ConfigureSpawn(shape);
+                return _spawnZones[zoneIndex].SpawnShape();
             }
         }
 

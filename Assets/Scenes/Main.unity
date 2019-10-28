@@ -411,7 +411,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _creationSpeedSlider: {fileID: 967610148}
   _destructionSpeedSlider: {fileID: 1617054112}
-  _shapeFactory: {fileID: 11400000, guid: 8649da16e305a5142b9ad6ce30ab6d8a, type: 2}
+  _shapeFactories:
+  - {fileID: 11400000, guid: 8649da16e305a5142b9ad6ce30ab6d8a, type: 2}
+  - {fileID: 11400000, guid: be7c81b46f03ebe4a90f136aa6fe92b2, type: 2}
   _storage: {fileID: 1635401096}
   _reseedOnLoad: 0
   _spawnKey: 99

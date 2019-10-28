@@ -17,6 +17,8 @@ namespace Catlike.ObjectManagement
                 Random
             }
 
+            public ShapeFactory[] factories;
+            
             public MovementDirection movementDirection;
 
             public FloatRange speed;
@@ -33,8 +35,11 @@ namespace Catlike.ObjectManagement
         [SerializeField] private SpawnConfiguration _config;
 
 
-        public virtual void ConfigureSpawn(Shape shape)
+        public virtual Shape SpawnShape()
         {
+            int factoryIndex = Random.Range(0, _config.factories.Length);
+            Shape shape = _config.factories[factoryIndex].GetRandom();
+
             Transform t = shape.transform;
             t.localPosition = SpawnPoint;
             t.localRotation = Random.rotation;
@@ -73,6 +78,8 @@ namespace Catlike.ObjectManagement
             }
 
             shape.Velocity = direction * _config.speed.RandomValueInRange;
+
+            return shape;
         }
     }
 }
