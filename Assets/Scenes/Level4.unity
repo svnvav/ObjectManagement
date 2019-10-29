@@ -209,6 +209,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cff162591444789829b988f61b780d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _config:
+    factories:
+    - {fileID: 11400000, guid: 8649da16e305a5142b9ad6ce30ab6d8a, type: 2}
+    movementDirection: 0
+    speed:
+      min: 0
+      max: 0
+    angularSpeed:
+      min: 0
+      max: 0
+    scale:
+      min: 0
+      max: 0
+    color:
+      hue:
+        min: 0
+        max: 0
+      saturation:
+        min: 0
+        max: 0
+      value:
+        min: 0
+        max: 0
+    uniformColor: 0
   _surfaceOnly: 0
 --- !u!1 &689918964
 GameObject:
@@ -253,6 +277,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cff162591444789829b988f61b780d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _config:
+    factories:
+    - {fileID: 11400000, guid: be7c81b46f03ebe4a90f136aa6fe92b2, type: 2}
+    movementDirection: 0
+    speed:
+      min: 0
+      max: 0
+    angularSpeed:
+      min: 0
+      max: 0
+    scale:
+      min: 0.2
+      max: 1
+    color:
+      hue:
+        min: 0
+        max: 0
+      saturation:
+        min: 0
+        max: 0
+      value:
+        min: 0
+        max: 0
+    uniformColor: 0
   _surfaceOnly: 0
 --- !u!1 &874861197
 GameObject:
@@ -438,10 +486,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e620395f335a47bc9f57f0485b39db22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _config:
+    factories:
+    - {fileID: 11400000, guid: be7c81b46f03ebe4a90f136aa6fe92b2, type: 2}
+    - {fileID: 11400000, guid: 8649da16e305a5142b9ad6ce30ab6d8a, type: 2}
+    - {fileID: 11400000, guid: 8649da16e305a5142b9ad6ce30ab6d8a, type: 2}
+    movementDirection: 0
+    speed:
+      min: 0
+      max: 2
+    angularSpeed:
+      min: 0
+      max: 90
+    scale:
+      min: 0.2
+      max: 1.2
+    color:
+      hue:
+        min: 0
+        max: 0.29600662
+      saturation:
+        min: 0.47344583
+        max: 1
+      value:
+        min: 0.29641828
+        max: 1
+    uniformColor: 0
   _sequential: 1
   _spawnZones:
   - {fileID: 689918966}
   - {fileID: 504279513}
+  _overrideConfig: 1
 --- !u!1 &1950268541
 GameObject:
   m_ObjectHideFlags: 0

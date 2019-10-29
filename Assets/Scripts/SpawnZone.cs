@@ -56,28 +56,38 @@ namespace Catlike.ObjectManagement
                 }
             }
             
-            shape.AngularVelocity = Random.onUnitSphere * _config.angularSpeed.RandomValueInRange;
-
-            Vector3 direction;
-            switch (_config.movementDirection)
+            var angularSpeed = _config.angularSpeed.RandomValueInRange;
+            if (angularSpeed != 0f)
             {
-                case SpawnConfiguration.MovementDirection.Forward:
-                    direction = transform.forward;
-                    break;
-                case SpawnConfiguration.MovementDirection.Upward:
-                    direction = transform.up;
-                    break;
-                case SpawnConfiguration.MovementDirection.Outward:
-                    direction = (t.localPosition - transform.position).normalized;
-                    break;
-                case SpawnConfiguration.MovementDirection.Random:
-                    direction = Random.onUnitSphere;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                var rotation = shape.AddBehaviour<RotationShapeBehaviour>();
+                rotation.AngularVelocity = Random.onUnitSphere * angularSpeed;
             }
 
-            shape.Velocity = direction * _config.speed.RandomValueInRange;
+            float speed = _config.speed.RandomValueInRange;
+            if (speed != 0f)
+            {
+                Vector3 direction;
+                switch (_config.movementDirection)
+                {
+                    case SpawnConfiguration.MovementDirection.Forward:
+                        direction = transform.forward;
+                        break;
+                    case SpawnConfiguration.MovementDirection.Upward:
+                        direction = transform.up;
+                        break;
+                    case SpawnConfiguration.MovementDirection.Outward:
+                        direction = (t.localPosition - transform.position).normalized;
+                        break;
+                    case SpawnConfiguration.MovementDirection.Random:
+                        direction = Random.onUnitSphere;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                var movement = shape.AddBehaviour<MovementShapeBehaviour>();
+                movement.Velocity = direction * speed;
+            }
 
             return shape;
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.PlayerLoop;
 
@@ -13,6 +14,13 @@ namespace Catlike.ObjectManagement
         private MeshRenderer[] _meshRenderers;
         
         private int _shapeId = int.MinValue;
+        
+        private Color[] _colors;
+        
+        private ShapeFactory _originFactory;
+
+        private List<ShapeBehaviour> _shapeBehaviours;
+        
         public int ShapeId {
             get {
                 return _shapeId;
@@ -28,11 +36,8 @@ namespace Catlike.ObjectManagement
         }
         
         public int MaterialId { get; private set; }
-        
-        private Color[] _colors;
-        public int ColorCount => _colors.Length;
 
-        private ShapeFactory _originFactory;
+        public int ColorCount => _colors.Length;
 
         public ShapeFactory OriginFactory
         {
@@ -54,12 +59,33 @@ namespace Catlike.ObjectManagement
         private void Awake()
         {
             _colors = new Color[_meshRenderers.Length];
+            _shapeBehaviours = new List<ShapeBehaviour>();
         }
 
         public void GameUpdate()
         {
-            transform.Rotate(AngularVelocity * Time.deltaTime);
-            transform.localPosition += Velocity * Time.deltaTime;
+            foreach (var behaviour in _shapeBehaviours)
+            {
+                behaviour.GameUpdate(this);
+            }
+        }
+
+        public T AddBehaviour<T>() where T : ShapeBehaviour
+        {
+            var component = gameObject.AddComponent<T>();
+            _shapeBehaviours.Add(component);
+            return component;
+        }
+        
+        ShapeBehaviour AddBehaviour (ShapeBehaviourType type) {
+            switch (type) {
+                case ShapeBehaviourType.Movement:
+                    return AddBehaviour<MovementShapeBehaviour>();
+                case ShapeBehaviourType.Rotation:
+                    return AddBehaviour<RotationShapeBehaviour>();
+            }
+            Debug.LogError("Forgot to support " + type);
+            return null;
         }
 
         public void SetMaterial (Material material, int materialId) {
@@ -98,6 +124,10 @@ namespace Catlike.ObjectManagement
         }
         
         public void Recycle () {
+            for (int i = 0; i < _shapeBehaviours.Count; i++) {
+                Destroy(_shapeBehaviours[i]);
+            }
+            _shapeBehaviours.Clear();
             OriginFactory.Reclaim(this);
         }
         
@@ -107,8 +137,12 @@ namespace Catlike.ObjectManagement
             for (int i = 0; i < _colors.Length; i++) {
                 writer.Write(_colors[i]);
             }
-            writer.Write(AngularVelocity);
-            writer.Write(Velocity);
+            writer.Write(_shapeBehaviours.Count);
+            foreach (var behaviour in _shapeBehaviours)
+            {
+                writer.Write((int)behaviour.BehaviorType);
+                behaviour.Save(writer);
+            }
         }
 
         public override void Load (GameDataReader reader) {
@@ -121,9 +155,18 @@ namespace Catlike.ObjectManagement
             {
                 SetColor(reader.Version > 2 ? reader.ReadColor() : Color.white);
             }
-            
-            AngularVelocity = reader.Version >= 7 ? reader.ReadVector3() : Vector3.zero;
-            Velocity = reader.Version >= 7 ? reader.ReadVector3() : Vector3.zero;
+
+            if (reader.Version >= 9) {
+                int behaviorCount = reader.ReadInt();
+                for (int i = 0; i < behaviorCount; i++) {
+                    AddBehaviour((ShapeBehaviourType)reader.ReadInt()).Load(reader);
+                }
+            }
+            else if (reader.Version >= 7) {
+                AddBehaviour<RotationShapeBehaviour>().AngularVelocity =
+                    reader.ReadVector3();
+                AddBehaviour<MovementShapeBehaviour>().Velocity = reader.ReadVector3();
+            }
         }
 
         private void LoadColors(GameDataReader reader)

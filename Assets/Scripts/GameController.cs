@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 
 public class GameController : PersistableObject
 {
-    const int saveVersion = 8;
+    const int saveVersion = 9;
     public float CreationSpeed { get; set; }
     public float DestructionSpeed { get; set; }
 
