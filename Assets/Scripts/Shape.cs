@@ -35,6 +35,8 @@ namespace Catlike.ObjectManagement
             }
         }
         
+        public float Age { get; private set; }
+        
         public int MaterialId { get; private set; }
 
         public int ColorCount => _colors.Length;
@@ -64,6 +66,7 @@ namespace Catlike.ObjectManagement
 
         public void GameUpdate()
         {
+            Age += Time.deltaTime;
             foreach (var behaviour in _shapeBehaviours)
             {
                 behaviour.GameUpdate(this);
@@ -75,17 +78,6 @@ namespace Catlike.ObjectManagement
             var component = ShapeBehaviourPool<T>.Get();
             _shapeBehaviours.Add(component);
             return component;
-        }
-        
-        ShapeBehaviour AddBehaviour (ShapeBehaviourType type) {
-            switch (type) {
-                case ShapeBehaviourType.Movement:
-                    return AddBehaviour<MovementShapeBehaviour>();
-                case ShapeBehaviourType.Rotation:
-                    return AddBehaviour<RotationShapeBehaviour>();
-            }
-            Debug.LogError("Forgot to support " + type);
-            return null;
         }
 
         public void SetMaterial (Material material, int materialId) {
@@ -123,7 +115,9 @@ namespace Catlike.ObjectManagement
             _meshRenderers[index].SetPropertyBlock(sharedPropertyBlock);
         }
         
-        public void Recycle () {
+        public void Recycle ()
+        {
+            Age = 0f;
             for (int i = 0; i < _shapeBehaviours.Count; i++) {
                 _shapeBehaviours[i].Recycle();
             }
@@ -137,6 +131,7 @@ namespace Catlike.ObjectManagement
             for (int i = 0; i < _colors.Length; i++) {
                 writer.Write(_colors[i]);
             }
+            writer.Write(Age);
             writer.Write(_shapeBehaviours.Count);
             foreach (var behaviour in _shapeBehaviours)
             {
@@ -156,10 +151,15 @@ namespace Catlike.ObjectManagement
                 SetColor(reader.Version > 2 ? reader.ReadColor() : Color.white);
             }
 
-            if (reader.Version >= 9) {
+            if (reader.Version >= 9)
+            {
+                Age = reader.ReadFloat();
                 int behaviorCount = reader.ReadInt();
-                for (int i = 0; i < behaviorCount; i++) {
-                    AddBehaviour((ShapeBehaviourType)reader.ReadInt()).Load(reader);
+                for (int i = 0; i < behaviorCount; i++)
+                {
+                    var behaviour = ((ShapeBehaviourType) reader.ReadInt()).GetInstance();
+                    _shapeBehaviours.Add(behaviour);
+                    behaviour.Load(reader);
                 }
             }
             else if (reader.Version >= 7) {

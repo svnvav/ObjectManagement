@@ -24,9 +24,13 @@ namespace Catlike.ObjectManagement
             public FloatRange speed;
             public FloatRange angularSpeed;
             public FloatRange scale;
+            
             public ColorRangeHSV color;
-
             public bool uniformColor;
+            
+            public MovementDirection oscillationDirection;
+            public FloatRange oscillationAmplitude;
+            public FloatRange oscillationFrequency;
         }
 
         public abstract Vector3 SpawnPoint { get; }
@@ -66,30 +70,42 @@ namespace Catlike.ObjectManagement
             float speed = _config.speed.RandomValueInRange;
             if (speed != 0f)
             {
-                Vector3 direction;
-                switch (_config.movementDirection)
-                {
-                    case SpawnConfiguration.MovementDirection.Forward:
-                        direction = transform.forward;
-                        break;
-                    case SpawnConfiguration.MovementDirection.Upward:
-                        direction = transform.up;
-                        break;
-                    case SpawnConfiguration.MovementDirection.Outward:
-                        direction = (t.localPosition - transform.position).normalized;
-                        break;
-                    case SpawnConfiguration.MovementDirection.Random:
-                        direction = Random.onUnitSphere;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
                 var movement = shape.AddBehaviour<MovementShapeBehaviour>();
-                movement.Velocity = direction * speed;
+
+                movement.Velocity = speed * GetDirectionVector(_config.movementDirection, t);
             }
 
+            SetupOscillation(shape);
+            
             return shape;
+        }
+        
+        private void SetupOscillation (Shape shape) {
+            float amplitude = _config.oscillationAmplitude.RandomValueInRange;
+            float frequency = _config.oscillationFrequency.RandomValueInRange;
+            if (amplitude == 0f || frequency == 0f) {
+                return;
+            }
+            var oscillation = shape.AddBehaviour<OscillationShapeBehaviour>();
+            oscillation.Offset = GetDirectionVector(
+                                     _config.oscillationDirection, shape.transform
+                                 ) * amplitude;
+            oscillation.Frequency = frequency;
+        }
+        
+        private Vector3 GetDirectionVector (
+            SpawnConfiguration.MovementDirection direction, Transform t
+        ) {
+            switch (direction) {
+                case SpawnConfiguration.MovementDirection.Upward:
+                    return transform.up;
+                case SpawnConfiguration.MovementDirection.Outward:
+                    return (t.localPosition - transform.position).normalized;
+                case SpawnConfiguration.MovementDirection.Random:
+                    return Random.onUnitSphere;
+                default:
+                    return transform.forward;
+            }
         }
     }
 }
