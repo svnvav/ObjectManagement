@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Catlike.ObjectManagement
 {
-    public class RotationShapeBehaviour : ShapeBehaviour
+    public sealed class RotationShapeBehaviour : ShapeBehaviour
     {
         public override ShapeBehaviourType BehaviorType => ShapeBehaviourType.Rotation;
         
@@ -18,6 +18,11 @@ namespace Catlike.ObjectManagement
 
         public override void Load (GameDataReader reader) {
             AngularVelocity = reader.ReadVector3();
+        }
+        
+        public override void Recycle()
+        {
+            ShapeBehaviourPool<RotationShapeBehaviour>.Reclaim(this);
         }
     }
 }

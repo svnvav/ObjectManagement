@@ -70,9 +70,9 @@ namespace Catlike.ObjectManagement
             }
         }
 
-        public T AddBehaviour<T>() where T : ShapeBehaviour
+        public T AddBehaviour<T>() where T : ShapeBehaviour, new()
         {
-            var component = gameObject.AddComponent<T>();
+            var component = ShapeBehaviourPool<T>.Get();
             _shapeBehaviours.Add(component);
             return component;
         }
@@ -125,7 +125,7 @@ namespace Catlike.ObjectManagement
         
         public void Recycle () {
             for (int i = 0; i < _shapeBehaviours.Count; i++) {
-                Destroy(_shapeBehaviours[i]);
+                _shapeBehaviours[i].Recycle();
             }
             _shapeBehaviours.Clear();
             OriginFactory.Reclaim(this);
