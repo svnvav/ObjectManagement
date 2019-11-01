@@ -48,17 +48,7 @@ namespace Catlike.ObjectManagement
             t.localPosition = SpawnPoint;
             t.localRotation = Random.rotation;
             t.localScale = Vector3.one * _config.scale.RandomValueInRange;
-            if (_config.uniformColor)
-            {
-                shape.SetColor(_config.color.RandomInRange);
-            }
-            else
-            {
-                for (int i = 0; i < shape.ColorCount; i++)
-                {
-                    shape.SetColor(_config.color.RandomInRange, i);
-                }
-            }
+            SetupColor(shape);
             
             var angularSpeed = _config.angularSpeed.RandomValueInRange;
             if (angularSpeed != 0f)
@@ -77,7 +67,31 @@ namespace Catlike.ObjectManagement
 
             SetupOscillation(shape);
             
+            CreateSatelliteFor(shape);
+            
             return shape;
+        }
+        
+        private void CreateSatelliteFor (Shape focalShape) {
+            int factoryIndex = Random.Range(0, _config.factories.Length);
+            Shape shape = _config.factories[factoryIndex].GetRandom();
+            Transform t = shape.transform;
+            t.localRotation = Random.rotation;
+            t.localScale = focalShape.transform.localScale * 0.5f;
+            t.localPosition = focalShape.transform.localPosition + Vector3.up;
+            shape.AddBehaviour<MovementShapeBehaviour>().Velocity = Vector3.up;
+            SetupColor(shape);
+        }
+        
+        private void SetupColor (Shape shape) {
+            if (_config.uniformColor) {
+                shape.SetColor(_config.color.RandomInRange);
+            }
+            else {
+                for (int i = 0; i < shape.ColorCount; i++) {
+                    shape.SetColor(_config.color.RandomInRange, i);
+                }
+            }
         }
         
         private void SetupOscillation (Shape shape) {
