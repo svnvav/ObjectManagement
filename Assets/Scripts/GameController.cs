@@ -10,6 +10,8 @@ using Random = UnityEngine.Random;
 
 public class GameController : PersistableObject
 {
+    public static GameController Instance { get; private set; }
+    
     const int saveVersion = 9;
     public float CreationSpeed { get; set; }
     public float DestructionSpeed { get; set; }
@@ -35,6 +37,7 @@ public class GameController : PersistableObject
 
     private void Awake()
     {
+        Instance = this;
         _mainRandomState = Random.state;
         _creationProgress = 0f;
         _shapes = new List<Shape>();
@@ -83,9 +86,9 @@ public class GameController : PersistableObject
             }
         }
 
-        if (Input.GetKey(_spawnKey))
+        if (Input.GetKeyDown(_spawnKey))
         {
-            SpawnShape();
+            GameLevel.Current.SpawnShape();
         }
 
         if (Input.GetKey(_destroyKey))
@@ -119,7 +122,7 @@ public class GameController : PersistableObject
         while (_creationProgress >= 1f)
         {
             _creationProgress -= 1f;
-            SpawnShape();
+            GameLevel.Current.SpawnShape();
         }
 
         _destructionProgress += Time.deltaTime * DestructionSpeed;
@@ -144,9 +147,8 @@ public class GameController : PersistableObject
         enabled = true;
     }
 
-    private void SpawnShape()
-    {
-        _shapes.Add(GameLevel.Current.SpawnShape());
+    public void AddShape (Shape shape) {
+        _shapes.Add(shape);
     }
 
     private void DestroyShape()
@@ -245,7 +247,7 @@ public class GameController : PersistableObject
             var materialId = version > 1 ? reader.ReadInt() : 0;
             Shape instance = _shapeFactories[factoryId].Get(shapeId, materialId);
             instance.Load(reader);
-            _shapes.Add(instance);
+            //_shapes.Add(instance);
         }
     }
 }

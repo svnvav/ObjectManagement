@@ -20,8 +20,8 @@ namespace Catlike.ObjectManagement
             }
         }
         
-        public Shape SpawnShape() {
-            return _spawnZone.SpawnShape();
+        public void SpawnShape() {
+            _spawnZone.SpawnShape();
         }
 
         public override void Save(GameDataWriter writer)

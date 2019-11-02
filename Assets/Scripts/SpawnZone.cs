@@ -39,7 +39,7 @@ namespace Catlike.ObjectManagement
         [SerializeField] private SpawnConfiguration _config;
 
 
-        public virtual Shape SpawnShape()
+        public virtual void SpawnShape()
         {
             int factoryIndex = Random.Range(0, _config.factories.Length);
             Shape shape = _config.factories[factoryIndex].GetRandom();
@@ -69,7 +69,7 @@ namespace Catlike.ObjectManagement
             
             CreateSatelliteFor(shape);
             
-            return shape;
+            //return shape;
         }
         
         private void CreateSatelliteFor (Shape focalShape) {

@@ -105,6 +105,7 @@ namespace Catlike.ObjectManagement
             
             instance.SetMaterial(_materials[materialId], materialId);
 
+            GameController.Instance.AddShape(instance);
             return instance;
         }
 
