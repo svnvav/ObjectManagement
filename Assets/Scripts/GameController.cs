@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Catlike.ObjectManagement;
@@ -11,14 +10,14 @@ using Random = UnityEngine.Random;
 public class GameController : PersistableObject
 {
     public static GameController Instance { get; private set; }
-    
+
     const int saveVersion = 9;
     public float CreationSpeed { get; set; }
     public float DestructionSpeed { get; set; }
 
     [SerializeField] Slider _creationSpeedSlider;
     [SerializeField] Slider _destructionSpeedSlider;
-    
+
     [SerializeField] private ShapeFactory[] _shapeFactories;
     [SerializeField] private PersistentStorage _storage;
 
@@ -29,7 +28,7 @@ public class GameController : PersistableObject
     [SerializeField] private KeyCode _newGameKey;
     [SerializeField] private KeyCode _saveKey = KeyCode.S;
     [SerializeField] private KeyCode _loadKey = KeyCode.L;
-    
+
     private List<Shape> _shapes;
     private float _creationProgress, _destructionProgress;
     private int _loadedLevelBuildIndex;
@@ -57,7 +56,7 @@ public class GameController : PersistableObject
     private void Start()
     {
         NewGame();
-        
+
 #if UNITY_EDITOR
         for (int i = 0; i < SceneManager.sceneCount; i++)
         {
@@ -117,7 +116,7 @@ public class GameController : PersistableObject
         {
             shape.GameUpdate();
         }
-        
+
         _creationProgress += Time.deltaTime * CreationSpeed;
         while (_creationProgress >= 1f)
         {
@@ -140,6 +139,7 @@ public class GameController : PersistableObject
         {
             yield return SceneManager.UnloadSceneAsync(_loadedLevelBuildIndex);
         }
+
         yield return
             SceneManager.LoadSceneAsync(levelBuildIndex, LoadSceneMode.Additive);
         SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(levelBuildIndex));
@@ -147,10 +147,16 @@ public class GameController : PersistableObject
         enabled = true;
     }
 
-    public void AddShape (Shape shape) {
+    public void AddShape(Shape shape)
+    {
+        shape.SaveIndex = _shapes.Count;
         _shapes.Add(shape);
     }
 
+    public Shape GetShape (int index) {
+        return _shapes[index];
+    }
+    
     private void DestroyShape()
     {
         if (_shapes.Count > 0)
@@ -158,6 +164,7 @@ public class GameController : PersistableObject
             int index = Random.Range(0, _shapes.Count);
             _shapes[index].Recycle();
             int lastIndex = _shapes.Count - 1;
+            _shapes[lastIndex].SaveIndex = index;
             _shapes[index] = _shapes[lastIndex];
             _shapes.RemoveAt(lastIndex);
         }
@@ -167,9 +174,9 @@ public class GameController : PersistableObject
     {
         _creationSpeedSlider.value = CreationSpeed = 0;
         _destructionSpeedSlider.value = DestructionSpeed = 0;
-        
+
         Random.state = _mainRandomState;
-        int seed = Random.Range(0, int.MaxValue) ^ (int)Time.unscaledTime;
+        int seed = Random.Range(0, int.MaxValue) ^ (int) Time.unscaledTime;
         _mainRandomState = Random.state;
         Random.InitState(seed);
 
@@ -211,15 +218,14 @@ public class GameController : PersistableObject
         }
 
         StartCoroutine(LoadGame(reader));
-        
     }
 
     private IEnumerator LoadGame(GameDataReader reader)
     {
         var version = reader.Version;
-        
+
         int count = version <= 0 ? -version : reader.ReadInt();
-        
+
         if (version >= 5)
         {
             var randomState = reader.ReadRandomState();
@@ -233,10 +239,11 @@ public class GameController : PersistableObject
             _destructionSpeedSlider.value = DestructionSpeed = reader.ReadFloat();
             _destructionProgress = reader.ReadFloat();
         }
-        
+
         yield return LoadLevel(version < 4 ? 1 : reader.ReadInt());
-        
-        if (version >= 6) {
+
+        if (version >= 6)
+        {
             GameLevel.Current.Load(reader);
         }
 
@@ -247,7 +254,11 @@ public class GameController : PersistableObject
             var materialId = version > 1 ? reader.ReadInt() : 0;
             Shape instance = _shapeFactories[factoryId].Get(shapeId, materialId);
             instance.Load(reader);
-            //_shapes.Add(instance);
+        }
+
+        foreach (var shape in _shapes)
+        {
+            shape.ResolveShapeInstances();
         }
     }
 }

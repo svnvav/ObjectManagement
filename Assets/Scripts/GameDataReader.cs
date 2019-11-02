@@ -53,5 +53,9 @@ namespace Catlike.ObjectManagement
         public Random.State ReadRandomState () {
             return JsonUtility.FromJson<Random.State>(_reader.ReadString());
         }
+        
+        public ShapeInstance ReadShapeInstance () {
+            return new ShapeInstance(_reader.ReadInt32());
+        }
     }
 }

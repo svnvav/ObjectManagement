@@ -38,6 +38,9 @@ namespace Catlike.ObjectManagement
         public float Age { get; private set; }
         
         public int InstanceId { get; private set; }
+        
+        public int SaveIndex { get; set; }
+        
         public int MaterialId { get; private set; }
 
         public int ColorCount => _colors.Length;
@@ -130,6 +133,12 @@ namespace Catlike.ObjectManagement
             }
             _shapeBehaviours.Clear();
             OriginFactory.Reclaim(this);
+        }
+        
+        public void ResolveShapeInstances () {
+            for (int i = 0; i < _shapeBehaviours.Count; i++) {
+                _shapeBehaviours[i].ResolveShapeInstances();
+            }
         }
         
         public override void Save (GameDataWriter writer) {

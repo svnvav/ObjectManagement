@@ -16,6 +16,8 @@ namespace Catlike.ObjectManagement
         public abstract void Load(GameDataReader reader);
 
         public abstract void Recycle();
+        
+        public virtual void ResolveShapeInstances () {}
 
 #if UNITY_EDITOR
         public bool IsReclaimed { get; set; }

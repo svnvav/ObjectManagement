@@ -10,19 +10,19 @@ namespace Catlike.ObjectManagement
 
         private float _frequency;
 
-        private Vector3 _cosOffset, _sinOffset, _prevPosition;
+        private Vector3 _cosOffset, _sinOffset, _previousPosition;
 
-        public void Initialize (
+        public void Initialize(
             Shape shape, Shape focalShape, float radius, float frequency
-        ) {
+        )
+        {
             _focalShape = focalShape;
             _frequency = frequency;
             Vector3 orbitAxis = Random.onUnitSphere;
             do
             {
                 _cosOffset = Vector3.Cross(orbitAxis, Random.onUnitSphere).normalized;
-            } 
-            while (_cosOffset.sqrMagnitude < 0.1f);
+            } while (_cosOffset.sqrMagnitude < 0.1f);
 
             _sinOffset = Vector3.Cross(_cosOffset, orbitAxis);
             _cosOffset *= radius;
@@ -31,15 +31,16 @@ namespace Catlike.ObjectManagement
             shape.AddBehaviour<RotationShapeBehaviour>().AngularVelocity =
                 -360f * frequency * shape.transform.InverseTransformDirection(orbitAxis);
 
-            _prevPosition = shape.transform.localPosition;
+            GameUpdate(shape);
+            _previousPosition = shape.transform.localPosition;
         }
 
         public override bool GameUpdate(Shape shape)
         {
             if (_focalShape.IsValid)
             {
-                _prevPosition = shape.transform.localPosition;
-                
+                _previousPosition = shape.transform.localPosition;
+
                 var t = 2f * Mathf.PI * _frequency * shape.Age;
                 shape.transform.localPosition =
                     _focalShape.Shape.transform.localPosition +
@@ -47,25 +48,38 @@ namespace Catlike.ObjectManagement
                 return true;
             }
 
-            shape.AddBehaviour<MovementShapeBehaviour>().Velocity = 
-                (shape.transform.localPosition - _prevPosition)/Time.deltaTime;
-            
+            shape.AddBehaviour<MovementShapeBehaviour>().Velocity =
+                (shape.transform.localPosition - _previousPosition) / Time.deltaTime;
+
             return false;
         }
 
         public override void Save(GameDataWriter writer)
         {
-            throw new System.NotImplementedException();
+            writer.Write(_focalShape);
+            writer.Write(_frequency);
+            writer.Write(_cosOffset);
+            writer.Write(_sinOffset);
+            writer.Write(_previousPosition);
         }
 
         public override void Load(GameDataReader reader)
         {
-            throw new System.NotImplementedException();
+            _focalShape = reader.ReadShapeInstance();
+            _frequency = reader.ReadFloat();
+            _cosOffset = reader.ReadVector3();
+            _sinOffset = reader.ReadVector3();
+            _previousPosition = reader.ReadVector3();
         }
 
         public override void Recycle()
         {
             ShapeBehaviourPool<SatelliteShapeBehaviour>.Reclaim(this);
+        }
+
+        public override void ResolveShapeInstances()
+        {
+            _focalShape.Resolve();
         }
     }
 }
