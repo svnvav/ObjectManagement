@@ -130,6 +130,15 @@ public class GameController : PersistableObject
             _destructionProgress -= 1f;
             DestroyShape();
         }
+
+        var limit = GameLevel.Current.PopulationLimit;
+        if (limit > 0)
+        {
+            while (_shapes.Count > limit)
+            {
+                DestroyShape();
+            }
+        }
     }
 
     private IEnumerator LoadLevel(int levelBuildIndex)

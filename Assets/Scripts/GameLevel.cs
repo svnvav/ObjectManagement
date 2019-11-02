@@ -6,10 +6,14 @@ namespace Catlike.ObjectManagement
     public class GameLevel : PersistableObject
     {
         public static GameLevel Current;
+
+        [SerializeField] private int _populationLimit;
         
         [SerializeField] private SpawnZone _spawnZone;
 
         [SerializeField] private PersistableObject[] _persistentObjects;
+
+        public int PopulationLimit => _populationLimit;
 
         private void OnEnable()
         {

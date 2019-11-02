@@ -18,7 +18,7 @@ namespace Catlike.ObjectManagement
         public ShapeInstance(int saveIndex)
         {
             Shape = null;
-            _instanceIdOrSaveIndex = Shape.InstanceId;
+            _instanceIdOrSaveIndex = saveIndex;
         }
         
         public void Resolve () {

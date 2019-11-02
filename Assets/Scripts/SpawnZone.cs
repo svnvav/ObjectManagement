@@ -35,6 +35,8 @@ namespace Catlike.ObjectManagement
             [System.Serializable]
             public struct SatelliteConfiguration
             {
+                public IntRange amount;
+                
                 [FloatRangeSlider(0.1f, 1f)] public FloatRange relativeScale;
                 
                 public FloatRange orbitRadius;
@@ -79,7 +81,11 @@ namespace Catlike.ObjectManagement
 
             SetupOscillation(shape);
 
-            CreateSatelliteFor(shape);
+            var satelliteCount = _config.satellite.amount.RandomValueInRange;
+            for (int i = 0; i < satelliteCount; i++)
+            {
+                CreateSatelliteFor(shape);
+            }
         }
 
         private void CreateSatelliteFor(Shape focalShape)
