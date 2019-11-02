@@ -9,7 +9,7 @@ namespace Catlike.ObjectManagement
     {
         public abstract ShapeBehaviourType BehaviorType { get; }
 
-        public abstract void GameUpdate(Shape shape);
+        public abstract bool GameUpdate(Shape shape);
 
         public abstract void Save(GameDataWriter writer);
 

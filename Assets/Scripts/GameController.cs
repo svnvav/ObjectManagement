@@ -91,7 +91,7 @@ public class GameController : PersistableObject
             GameLevel.Current.SpawnShape();
         }
 
-        if (Input.GetKey(_destroyKey))
+        if (Input.GetKeyDown(_destroyKey))
         {
             DestroyShape();
         }

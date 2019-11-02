@@ -68,9 +68,14 @@ namespace Catlike.ObjectManagement
         public void GameUpdate()
         {
             Age += Time.deltaTime;
-            foreach (var behaviour in _shapeBehaviours)
+            for (var i = 0; i < _shapeBehaviours.Count; i++)
             {
-                behaviour.GameUpdate(this);
+                var behaviour = _shapeBehaviours[i];
+                if (!behaviour.GameUpdate(this))
+                {
+                    behaviour.Recycle();
+                    _shapeBehaviours.RemoveAt(i--);
+                }
             }
         }
 

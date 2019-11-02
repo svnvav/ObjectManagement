@@ -6,40 +6,51 @@ namespace Catlike.ObjectManagement
     {
         public override ShapeBehaviourType BehaviorType => ShapeBehaviourType.Satellite;
 
-        ShapeInstance focalShape;
+        private ShapeInstance _focalShape;
 
-        float frequency;
+        private float _frequency;
 
-        Vector3 cosOffset, sinOffset;
+        private Vector3 _cosOffset, _sinOffset, _prevPosition;
 
         public void Initialize (
             Shape shape, Shape focalShape, float radius, float frequency
         ) {
-            this.focalShape = focalShape;
-            this.frequency = frequency;
+            _focalShape = focalShape;
+            _frequency = frequency;
             Vector3 orbitAxis = Random.onUnitSphere;
             do
             {
-                cosOffset = Vector3.Cross(orbitAxis, Random.onUnitSphere).normalized;
+                _cosOffset = Vector3.Cross(orbitAxis, Random.onUnitSphere).normalized;
             } 
-            while (cosOffset.sqrMagnitude < 0.1f);
+            while (_cosOffset.sqrMagnitude < 0.1f);
 
-            sinOffset = Vector3.Cross(cosOffset, orbitAxis);
-            cosOffset *= radius;
-            sinOffset *= radius;
+            _sinOffset = Vector3.Cross(_cosOffset, orbitAxis);
+            _cosOffset *= radius;
+            _sinOffset *= radius;
 
             shape.AddBehaviour<RotationShapeBehaviour>().AngularVelocity =
                 -360f * frequency * shape.transform.InverseTransformDirection(orbitAxis);
+
+            _prevPosition = shape.transform.localPosition;
         }
 
-        public override void GameUpdate(Shape shape)
+        public override bool GameUpdate(Shape shape)
         {
-            if (!focalShape.IsValid) return;
+            if (_focalShape.IsValid)
+            {
+                _prevPosition = shape.transform.localPosition;
+                
+                var t = 2f * Mathf.PI * _frequency * shape.Age;
+                shape.transform.localPosition =
+                    _focalShape.Shape.transform.localPosition +
+                    _cosOffset * Mathf.Cos(t) + _sinOffset * Mathf.Sin(t);
+                return true;
+            }
+
+            shape.AddBehaviour<MovementShapeBehaviour>().Velocity = 
+                (shape.transform.localPosition - _prevPosition)/Time.deltaTime;
             
-            var t = 2f * Mathf.PI * frequency * shape.Age;
-            shape.transform.localPosition =
-                focalShape.Shape.transform.localPosition +
-                cosOffset * Mathf.Cos(t) + sinOffset * Mathf.Sin(t);
+            return false;
         }
 
         public override void Save(GameDataWriter writer)
