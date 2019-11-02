@@ -45,6 +45,15 @@ namespace Catlike.ObjectManagement
             }
 
             public SatelliteConfiguration satellite;
+            
+            [System.Serializable]
+            public struct LifecycleConfiguration {
+
+                [FloatRangeSlider(0f, 3f)]
+                public FloatRange growingDuration;
+            }
+
+            public LifecycleConfiguration lifecycle;
         }
 
         public abstract Vector3 SpawnPoint { get; }
@@ -81,14 +90,19 @@ namespace Catlike.ObjectManagement
 
             SetupOscillation(shape);
 
+            float growingDuration =
+                _config.lifecycle.growingDuration.RandomValueInRange;
+            
             var satelliteCount = _config.satellite.amount.RandomValueInRange;
             for (int i = 0; i < satelliteCount; i++)
             {
-                CreateSatelliteFor(shape);
+                CreateSatelliteFor(shape, growingDuration);
             }
+            
+            SetupLifecycle(shape, growingDuration);
         }
 
-        private void CreateSatelliteFor(Shape focalShape)
+        private void CreateSatelliteFor(Shape focalShape, float growingDuration)
         {
             int factoryIndex = Random.Range(0, _config.factories.Length);
             Shape shape = _config.factories[factoryIndex].GetRandom();
@@ -102,9 +116,19 @@ namespace Catlike.ObjectManagement
                 focalShape,
                 _config.satellite.orbitRadius.RandomValueInRange,
                 _config.satellite.orbitFrequency.RandomValueInRange
-            );;
+            );
+            
+            SetupLifecycle(shape, growingDuration);
         }
 
+        private void SetupLifecycle (Shape shape, float growingDuration) {
+            if (growingDuration > 0f) {
+                shape.AddBehaviour<GrowingShapeBehaviour>().Initialize(
+                    shape, growingDuration
+                );
+            }
+        }
+        
         private void SetupColor(Shape shape)
         {
             if (_config.uniformColor)

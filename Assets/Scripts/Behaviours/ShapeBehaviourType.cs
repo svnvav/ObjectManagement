@@ -5,7 +5,8 @@ namespace Catlike.ObjectManagement
         Movement,
         Rotation,
         Oscillation,
-        Satellite
+        Satellite,
+        Growing
     }
     
     public static class ShapeBehaviorTypeMethods {
@@ -20,6 +21,8 @@ namespace Catlike.ObjectManagement
                     return ShapeBehaviourPool<OscillationShapeBehaviour>.Get();
                 case ShapeBehaviourType.Satellite:
                     return ShapeBehaviourPool<SatelliteShapeBehaviour>.Get();
+                case ShapeBehaviourType.Growing:
+                    return ShapeBehaviourPool<GrowingShapeBehaviour>.Get();
             }
             UnityEngine.Debug.Log("Forgot to support " + type);
             return null;
