@@ -49,8 +49,17 @@ namespace Catlike.ObjectManagement
             [System.Serializable]
             public struct LifecycleConfiguration {
 
-                [FloatRangeSlider(0f, 3f)]
+                [FloatRangeSlider(0f, 2f)]
                 public FloatRange growingDuration;
+                
+                [FloatRangeSlider(0f, 2f)]
+                public FloatRange dyingDuration;
+                
+                public Vector2 RandomDurations =>
+                    new Vector2(
+                        growingDuration.RandomValueInRange,
+                        dyingDuration.RandomValueInRange
+                    );
             }
 
             public LifecycleConfiguration lifecycle;
@@ -90,19 +99,19 @@ namespace Catlike.ObjectManagement
 
             SetupOscillation(shape);
 
-            float growingDuration =
-                _config.lifecycle.growingDuration.RandomValueInRange;
+            var durations =
+                _config.lifecycle.RandomDurations;
             
             var satelliteCount = _config.satellite.amount.RandomValueInRange;
             for (int i = 0; i < satelliteCount; i++)
             {
-                CreateSatelliteFor(shape, growingDuration);
+                CreateSatelliteFor(shape, durations);
             }
             
-            SetupLifecycle(shape, growingDuration);
+            SetupLifecycle(shape, durations);
         }
 
-        private void CreateSatelliteFor(Shape focalShape, float growingDuration)
+        private void CreateSatelliteFor(Shape focalShape, Vector2 durations)
         {
             int factoryIndex = Random.Range(0, _config.factories.Length);
             Shape shape = _config.factories[factoryIndex].GetRandom();
@@ -118,13 +127,19 @@ namespace Catlike.ObjectManagement
                 _config.satellite.orbitFrequency.RandomValueInRange
             );
             
-            SetupLifecycle(shape, growingDuration);
+            SetupLifecycle(shape, durations);
         }
 
-        private void SetupLifecycle (Shape shape, float growingDuration) {
-            if (growingDuration > 0f) {
+        private void SetupLifecycle (Shape shape, Vector2 durations) {
+            if (durations.x > 0f) {
                 shape.AddBehaviour<GrowingShapeBehaviour>().Initialize(
-                    shape, growingDuration
+                    shape, durations.x
+                );
+            }
+            else if(durations.y > 0f)
+            {
+                shape.AddBehaviour<DyingShapeBehaviour>().Initialize(
+                    shape, durations.y
                 );
             }
         }

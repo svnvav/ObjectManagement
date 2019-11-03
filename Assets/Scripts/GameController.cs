@@ -30,6 +30,8 @@ public class GameController : PersistableObject
     [SerializeField] private KeyCode _loadKey = KeyCode.L;
 
     private List<Shape> _shapes;
+    private List<ShapeInstance> _killList;
+    private bool _inGameUpdateLoop;
     private float _creationProgress, _destructionProgress;
     private int _loadedLevelBuildIndex;
     private Random.State _mainRandomState;
@@ -40,6 +42,7 @@ public class GameController : PersistableObject
         _mainRandomState = Random.state;
         _creationProgress = 0f;
         _shapes = new List<Shape>();
+        _killList = new List<ShapeInstance>();
     }
 
     private void OnEnable()
@@ -112,10 +115,12 @@ public class GameController : PersistableObject
 
     private void FixedUpdate()
     {
+        _inGameUpdateLoop = true;
         foreach (var shape in _shapes)
         {
             shape.GameUpdate();
         }
+        _inGameUpdateLoop = false;
 
         _creationProgress += Time.deltaTime * CreationSpeed;
         while (_creationProgress >= 1f)
@@ -138,6 +143,16 @@ public class GameController : PersistableObject
             {
                 DestroyShape();
             }
+        }
+        
+        if (_killList.Count > 0) {
+            for (int i = 0; i < _killList.Count; i++) {
+                if (_killList[i].IsValid)
+                {
+                    KillImmediately(_killList[i].Shape);
+                }
+            }
+            _killList.Clear();
         }
     }
 
@@ -165,17 +180,32 @@ public class GameController : PersistableObject
     public Shape GetShape (int index) {
         return _shapes[index];
     }
+
+    public void Kill(Shape shape)
+    {
+        if (_inGameUpdateLoop) {
+            _killList.Add(shape);
+        }
+        else {
+            KillImmediately(shape);
+        }
+    }
+    
+    private void KillImmediately (Shape shape) {
+        int index = shape.SaveIndex;
+        shape.Recycle();
+        int lastIndex = _shapes.Count - 1;
+        _shapes[lastIndex].SaveIndex = index;
+        _shapes[index] = _shapes[lastIndex];
+        _shapes.RemoveAt(lastIndex);
+    }
     
     private void DestroyShape()
     {
         if (_shapes.Count > 0)
         {
-            int index = Random.Range(0, _shapes.Count);
-            _shapes[index].Recycle();
-            int lastIndex = _shapes.Count - 1;
-            _shapes[lastIndex].SaveIndex = index;
-            _shapes[index] = _shapes[lastIndex];
-            _shapes.RemoveAt(lastIndex);
+            var shape = _shapes[Random.Range(0, _shapes.Count)];
+            KillImmediately(shape);
         }
     }
 

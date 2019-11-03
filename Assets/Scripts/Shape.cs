@@ -123,6 +123,11 @@ namespace Catlike.ObjectManagement
             _colors[index] = color;
             _meshRenderers[index].SetPropertyBlock(sharedPropertyBlock);
         }
+
+        public void Die()
+        {
+            GameController.Instance.Kill(this);
+        }
         
         public void Recycle ()
         {
