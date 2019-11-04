@@ -19,7 +19,7 @@ namespace Catlike.ObjectManagement
         {
             var dyingDuration = shape.Age - _dyingAge;
             if (dyingDuration < _duration) {
-                float s = (1f - dyingDuration) / _duration;
+                float s = 1f - dyingDuration / _duration;
                 s = (3f - 2f * s) * s * s;
                 shape.transform.localScale = s * _originalScale;
                 return true;

@@ -7,7 +7,8 @@ namespace Catlike.ObjectManagement
         Oscillation,
         Satellite,
         Growing,
-        Dying
+        Dying,
+        Lifecycle
     }
     
     public static class ShapeBehaviorTypeMethods {
@@ -26,6 +27,8 @@ namespace Catlike.ObjectManagement
                     return ShapeBehaviourPool<GrowingShapeBehaviour>.Get();
                 case ShapeBehaviourType.Dying:
                     return ShapeBehaviourPool<DyingShapeBehaviour>.Get();
+                case ShapeBehaviourType.Lifecycle:
+                    return ShapeBehaviourPool<LifecycleShapeBehaviour>.Get();
             }
             UnityEngine.Debug.Log("Forgot to support " + type);
             return null;

@@ -42,6 +42,8 @@ namespace Catlike.ObjectManagement
                 public FloatRange orbitRadius;
 
                 public FloatRange orbitFrequency;
+                
+                public bool uniformLifecycles;
             }
 
             public SatelliteConfiguration satellite;
@@ -52,12 +54,16 @@ namespace Catlike.ObjectManagement
                 [FloatRangeSlider(0f, 2f)]
                 public FloatRange growingDuration;
                 
+                [FloatRangeSlider(0f, 100f)]
+                public FloatRange adultDuration;
+                
                 [FloatRangeSlider(0f, 2f)]
                 public FloatRange dyingDuration;
                 
-                public Vector2 RandomDurations =>
-                    new Vector2(
+                public Vector3 RandomDurations =>
+                    new Vector3(
                         growingDuration.RandomValueInRange,
+                        adultDuration.RandomValueInRange,
                         dyingDuration.RandomValueInRange
                     );
             }
@@ -99,19 +105,21 @@ namespace Catlike.ObjectManagement
 
             SetupOscillation(shape);
 
-            var durations =
+            var lifecycleDurations =
                 _config.lifecycle.RandomDurations;
             
             var satelliteCount = _config.satellite.amount.RandomValueInRange;
             for (int i = 0; i < satelliteCount; i++)
             {
-                CreateSatelliteFor(shape, durations);
+                CreateSatelliteFor(shape, 
+                    _config.satellite.uniformLifecycles ? lifecycleDurations : _config.lifecycle.RandomDurations
+                    );
             }
             
-            SetupLifecycle(shape, durations);
+            SetupLifecycle(shape, lifecycleDurations);
         }
 
-        private void CreateSatelliteFor(Shape focalShape, Vector2 durations)
+        private void CreateSatelliteFor(Shape focalShape, Vector3 durations)
         {
             int factoryIndex = Random.Range(0, _config.factories.Length);
             Shape shape = _config.factories[factoryIndex].GetRandom();
@@ -130,16 +138,29 @@ namespace Catlike.ObjectManagement
             SetupLifecycle(shape, durations);
         }
 
-        private void SetupLifecycle (Shape shape, Vector2 durations) {
+        private void SetupLifecycle (Shape shape, Vector3 durations) {
             if (durations.x > 0f) {
-                shape.AddBehaviour<GrowingShapeBehaviour>().Initialize(
-                    shape, durations.x
+                if (durations.y > 0f || durations.z > 0f) {
+                    shape.AddBehaviour<LifecycleShapeBehaviour>().Initialize(
+                        shape, durations.x, durations.y, durations.z
+                    );
+                }
+                else
+                {
+                    shape.AddBehaviour<GrowingShapeBehaviour>().Initialize(
+                        shape, durations.x
+                    );
+                }
+            }
+            else if (durations.y > 0f) {
+                shape.AddBehaviour<LifecycleShapeBehaviour>().Initialize(
+                    shape, durations.x, durations.y, durations.z
                 );
             }
-            else if(durations.y > 0f)
+            else if(durations.z > 0f)
             {
                 shape.AddBehaviour<DyingShapeBehaviour>().Initialize(
-                    shape, durations.y
+                    shape, durations.z
                 );
             }
         }
