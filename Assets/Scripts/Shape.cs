@@ -42,6 +42,8 @@ namespace Catlike.ObjectManagement
         public int SaveIndex { get; set; }
         
         public int MaterialId { get; private set; }
+        
+        public bool IsMarkedAsDying => GameController.Instance.IsMarkedAsDying(this);
 
         public int ColorCount => _colors.Length;
 
@@ -127,6 +129,10 @@ namespace Catlike.ObjectManagement
         public void Die()
         {
             GameController.Instance.Kill(this);
+        }
+        
+        public void MarkAsDying () {
+            GameController.Instance.MarkAsDying(this);
         }
         
         public void Recycle ()

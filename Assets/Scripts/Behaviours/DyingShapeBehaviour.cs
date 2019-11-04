@@ -13,6 +13,7 @@ namespace Catlike.ObjectManagement
             _originalScale = shape.transform.localScale;
             _duration = duration;
             _dyingAge = shape.Age;
+            shape.MarkAsDying();
         }
         
         public override bool GameUpdate(Shape shape)

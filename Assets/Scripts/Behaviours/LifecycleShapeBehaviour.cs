@@ -28,9 +28,14 @@ namespace Catlike.ObjectManagement
                     shape.Die();
                     return true;
                 }
-                shape.AddBehaviour<DyingShapeBehaviour>().Initialize(
-                    shape, _dyingDuration + (_dyingAge - shape.Age)
-                );
+
+                if (!shape.IsMarkedAsDying)
+                {
+                    shape.AddBehaviour<DyingShapeBehaviour>().Initialize(
+                        shape, _dyingDuration + (_dyingAge - shape.Age)
+                    );
+                }
+
                 return false;
             }
             return true;

@@ -17,6 +17,7 @@ public class GameController : PersistableObject
 
     [SerializeField] Slider _creationSpeedSlider;
     [SerializeField] Slider _destructionSpeedSlider;
+    [SerializeField] float destroyDuration;
 
     [SerializeField] private ShapeFactory[] _shapeFactories;
     [SerializeField] private PersistentStorage _storage;
@@ -30,11 +31,12 @@ public class GameController : PersistableObject
     [SerializeField] private KeyCode _loadKey = KeyCode.L;
 
     private List<Shape> _shapes;
-    private List<ShapeInstance> _killList;
+    private List<ShapeInstance> _killList, _markAsDyingList;
     private bool _inGameUpdateLoop;
     private float _creationProgress, _destructionProgress;
     private int _loadedLevelBuildIndex;
     private Random.State _mainRandomState;
+    private int _dyingShapeCount;
 
     private void Awake()
     {
@@ -43,6 +45,7 @@ public class GameController : PersistableObject
         _creationProgress = 0f;
         _shapes = new List<Shape>();
         _killList = new List<ShapeInstance>();
+        _markAsDyingList = new List<ShapeInstance>();
     }
 
     private void OnEnable()
@@ -139,7 +142,7 @@ public class GameController : PersistableObject
         var limit = GameLevel.Current.PopulationLimit;
         if (limit > 0)
         {
-            while (_shapes.Count > limit)
+            while (_shapes.Count - _dyingShapeCount > limit)
             {
                 DestroyShape();
             }
@@ -153,6 +156,14 @@ public class GameController : PersistableObject
                 }
             }
             _killList.Clear();
+        }
+        if (_markAsDyingList.Count > 0) {
+            for (int i = 0; i < _markAsDyingList.Count; i++) {
+                if (_markAsDyingList[i].IsValid) {
+                    MarkAsDyingImmediately(_markAsDyingList[i].Shape);
+                }
+            }
+            _markAsDyingList.Clear();
         }
     }
 
@@ -194,18 +205,60 @@ public class GameController : PersistableObject
     private void KillImmediately (Shape shape) {
         int index = shape.SaveIndex;
         shape.Recycle();
+        
+        if (index < _dyingShapeCount && index < --_dyingShapeCount) {
+            _shapes[_dyingShapeCount].SaveIndex = index;
+            _shapes[index] = _shapes[_dyingShapeCount];
+            index = _dyingShapeCount;
+        }
+        
         int lastIndex = _shapes.Count - 1;
-        _shapes[lastIndex].SaveIndex = index;
-        _shapes[index] = _shapes[lastIndex];
+        if (index < lastIndex)
+        {
+            _shapes[lastIndex].SaveIndex = index;
+            _shapes[index] = _shapes[lastIndex];
+        }
+
         _shapes.RemoveAt(lastIndex);
+    }
+    
+    public void MarkAsDying (Shape shape) {
+        if (_inGameUpdateLoop) {
+            _markAsDyingList.Add(shape);
+        }
+        else {
+            MarkAsDyingImmediately(shape);
+        }
+    }
+    
+    void MarkAsDyingImmediately (Shape shape) {
+        int index = shape.SaveIndex;
+        if (index < _dyingShapeCount) {
+            return;
+        }
+        _shapes[_dyingShapeCount].SaveIndex = index;
+        _shapes[index] = _shapes[_dyingShapeCount];
+        shape.SaveIndex = _dyingShapeCount;
+        _shapes[_dyingShapeCount++] = shape;
+    }
+    
+    public bool IsMarkedAsDying (Shape shape) {
+        return shape.SaveIndex < _dyingShapeCount;
     }
     
     private void DestroyShape()
     {
-        if (_shapes.Count > 0)
+        if (_shapes.Count- _dyingShapeCount > 0)
         {
-            var shape = _shapes[Random.Range(0, _shapes.Count)];
-            KillImmediately(shape);
+            var shape = _shapes[Random.Range(_dyingShapeCount, _shapes.Count)];
+            if (destroyDuration <= 0f) {
+                KillImmediately(shape);
+            }
+            else {
+                shape.AddBehaviour<DyingShapeBehaviour>().Initialize(
+                    shape, destroyDuration
+                );
+            }
         }
     }
 
@@ -225,6 +278,7 @@ public class GameController : PersistableObject
         }
 
         _shapes.Clear();
+        _dyingShapeCount = 0;
     }
 
     public override void Save(GameDataWriter writer)
