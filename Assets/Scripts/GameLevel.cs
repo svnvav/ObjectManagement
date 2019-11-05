@@ -4,30 +4,17 @@ using UnityEngine.Serialization;
 
 namespace Catlike.ObjectManagement
 {
-    public class GameLevel : PersistableObject
+    public partial class GameLevel : PersistableObject
     {
         public static GameLevel Current;
 
         [SerializeField] private int _populationLimit;
-        
+
         [SerializeField] private SpawnZone _spawnZone;
 
-        [FormerlySerializedAs("_persistentObjects")] 
-        [SerializeField] private GameLevelObject[] _levelObjects;
+        [FormerlySerializedAs("_persistentObjects")] [SerializeField]
+        private GameLevelObject[] _levelObjects;
 
-        public bool HasMissingLevelObjects {
-            get {
-                if (_levelObjects != null) {
-                    for (int i = 0; i < _levelObjects.Length; i++) {
-                        if (_levelObjects[i] == null) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-        }
-        
         public int PopulationLimit => _populationLimit;
 
         private void OnEnable()
@@ -46,8 +33,9 @@ namespace Catlike.ObjectManagement
                 levelObject.GameUpdate();
             }
         }
-        
-        public void SpawnShape() {
+
+        public void SpawnShape()
+        {
             _spawnZone.SpawnShape();
         }
 
