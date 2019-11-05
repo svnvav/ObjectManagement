@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5802625946761784658}
   - component: {fileID: 4679143803039063481}
   - component: {fileID: 107658086376660725}
-  - component: {fileID: 3908055404290834436}
   m_Layer: 0
   m_Name: CapsuleX
   m_TagString: Untagged
@@ -79,20 +78,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!136 &3908055404290834436
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3143303913439923901}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4772946486445602643
 GameObject:
   m_ObjectHideFlags: 0
@@ -105,7 +90,7 @@ GameObject:
   - component: {fileID: 3811373555459218124}
   - component: {fileID: 6177890460856260965}
   - component: {fileID: 7132088379978582532}
-  - component: {fileID: 6484319880144306514}
+  - component: {fileID: 6843912326769693663}
   m_Layer: 0
   m_Name: CompositeCapsule
   m_TagString: Untagged
@@ -191,8 +176,8 @@ MonoBehaviour:
   - {fileID: 6177890460856260965}
   - {fileID: 107658086376660725}
   - {fileID: 2208693434423437840}
---- !u!136 &6484319880144306514
-CapsuleCollider:
+--- !u!135 &6843912326769693663
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -201,9 +186,8 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
+  serializedVersion: 2
+  m_Radius: 0.9
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4977173897480588651
 GameObject:
@@ -216,7 +200,6 @@ GameObject:
   - component: {fileID: 8600647795890307157}
   - component: {fileID: 9135327815209314457}
   - component: {fileID: 2208693434423437840}
-  - component: {fileID: 4587584666987292606}
   m_Layer: 0
   m_Name: CapsuleZ
   m_TagString: Untagged
@@ -284,17 +267,3 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!136 &4587584666987292606
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4977173897480588651}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}

@@ -91,6 +91,7 @@ namespace Catlike.ObjectManagement
         {
             int factoryIndex = Random.Range(0, _config.factories.Length);
             Shape shape = _config.factories[factoryIndex].GetRandom();
+            shape.gameObject.layer = gameObject.layer;
 
             Transform t = shape.transform;
             t.localPosition = SpawnPoint;
@@ -133,6 +134,7 @@ namespace Catlike.ObjectManagement
         {
             int factoryIndex = Random.Range(0, _config.factories.Length);
             Shape shape = _config.factories[factoryIndex].GetRandom();
+            shape.gameObject.layer = gameObject.layer;
             Transform t = shape.transform;
             t.localRotation = Random.rotation;
             t.localScale =
