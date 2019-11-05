@@ -58,11 +58,15 @@ namespace Catlike.ObjectManagement
 
         public override void Save(GameDataWriter writer)
         {
+            base.Save(writer);
             writer.Write(_nextSequentialIndex);
         }
 
         public override void Load(GameDataReader reader)
         {
+            if (reader.Version >= 10) {
+                base.Load(reader);
+            }
             _nextSequentialIndex = reader.ReadInt();
         }
     }

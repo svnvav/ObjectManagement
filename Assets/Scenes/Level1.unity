@@ -150,6 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cff162591444789829b988f61b780d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _spawnSpeed: 50
   _config:
     factories:
     - {fileID: 11400000, guid: be7c81b46f03ebe4a90f136aa6fe92b2, type: 2}

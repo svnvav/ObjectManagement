@@ -11,7 +11,7 @@ public class GameController : PersistableObject
 {
     public static GameController Instance { get; private set; }
 
-    const int saveVersion = 9;
+    const int saveVersion = 10;
     public float CreationSpeed { get; set; }
     public float DestructionSpeed { get; set; }
 

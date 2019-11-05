@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Experimental.PlayerLoop;
 using Random = UnityEngine.Random;
 
 namespace Catlike.ObjectManagement
@@ -36,30 +37,27 @@ namespace Catlike.ObjectManagement
             public struct SatelliteConfiguration
             {
                 public IntRange amount;
-                
+
                 [FloatRangeSlider(0.1f, 1f)] public FloatRange relativeScale;
-                
+
                 public FloatRange orbitRadius;
 
                 public FloatRange orbitFrequency;
-                
+
                 public bool uniformLifecycles;
             }
 
             public SatelliteConfiguration satellite;
-            
-            [System.Serializable]
-            public struct LifecycleConfiguration {
 
-                [FloatRangeSlider(0f, 2f)]
-                public FloatRange growingDuration;
-                
-                [FloatRangeSlider(0f, 100f)]
-                public FloatRange adultDuration;
-                
-                [FloatRangeSlider(0f, 2f)]
-                public FloatRange dyingDuration;
-                
+            [System.Serializable]
+            public struct LifecycleConfiguration
+            {
+                [FloatRangeSlider(0f, 2f)] public FloatRange growingDuration;
+
+                [FloatRangeSlider(0f, 100f)] public FloatRange adultDuration;
+
+                [FloatRangeSlider(0f, 2f)] public FloatRange dyingDuration;
+
                 public Vector3 RandomDurations =>
                     new Vector3(
                         growingDuration.RandomValueInRange,
@@ -71,11 +69,23 @@ namespace Catlike.ObjectManagement
             public LifecycleConfiguration lifecycle;
         }
 
-        public abstract Vector3 SpawnPoint { get; }
-
+        [SerializeField, Range(0f, 50f)] float _spawnSpeed;
 
         [SerializeField] private SpawnConfiguration _config;
 
+        private float _spawnProgress;
+
+        public abstract Vector3 SpawnPoint { get; }
+
+        private void FixedUpdate()
+        {
+            _spawnProgress += Time.deltaTime * _spawnSpeed;
+            while (_spawnProgress >= 1f)
+            {
+                _spawnProgress -= 1f;
+                SpawnShape();
+            }
+        }
 
         public virtual void SpawnShape()
         {
@@ -107,15 +117,15 @@ namespace Catlike.ObjectManagement
 
             var lifecycleDurations =
                 _config.lifecycle.RandomDurations;
-            
+
             var satelliteCount = _config.satellite.amount.RandomValueInRange;
             for (int i = 0; i < satelliteCount; i++)
             {
-                CreateSatelliteFor(shape, 
+                CreateSatelliteFor(shape,
                     _config.satellite.uniformLifecycles ? lifecycleDurations : _config.lifecycle.RandomDurations
-                    );
+                );
             }
-            
+
             SetupLifecycle(shape, lifecycleDurations);
         }
 
@@ -129,18 +139,21 @@ namespace Catlike.ObjectManagement
                 focalShape.transform.localScale * _config.satellite.relativeScale.RandomValueInRange;
             SetupColor(shape);
             shape.AddBehaviour<SatelliteShapeBehaviour>().Initialize(
-                shape, 
+                shape,
                 focalShape,
                 _config.satellite.orbitRadius.RandomValueInRange,
                 _config.satellite.orbitFrequency.RandomValueInRange
             );
-            
+
             SetupLifecycle(shape, durations);
         }
 
-        private void SetupLifecycle (Shape shape, Vector3 durations) {
-            if (durations.x > 0f) {
-                if (durations.y > 0f || durations.z > 0f) {
+        private void SetupLifecycle(Shape shape, Vector3 durations)
+        {
+            if (durations.x > 0f)
+            {
+                if (durations.y > 0f || durations.z > 0f)
+                {
                     shape.AddBehaviour<LifecycleShapeBehaviour>().Initialize(
                         shape, durations.x, durations.y, durations.z
                     );
@@ -152,19 +165,20 @@ namespace Catlike.ObjectManagement
                     );
                 }
             }
-            else if (durations.y > 0f) {
+            else if (durations.y > 0f)
+            {
                 shape.AddBehaviour<LifecycleShapeBehaviour>().Initialize(
                     shape, durations.x, durations.y, durations.z
                 );
             }
-            else if(durations.z > 0f)
+            else if (durations.z > 0f)
             {
                 shape.AddBehaviour<DyingShapeBehaviour>().Initialize(
                     shape, durations.z
                 );
             }
         }
-        
+
         private void SetupColor(Shape shape)
         {
             if (_config.uniformColor)
@@ -211,6 +225,14 @@ namespace Catlike.ObjectManagement
                 default:
                     return transform.forward;
             }
+        }
+        
+        public override void Save (GameDataWriter writer) {
+            writer.Write(_spawnProgress);
+        }
+
+        public override void Load (GameDataReader reader) {
+            _spawnProgress = reader.ReadFloat();
         }
     }
 }
