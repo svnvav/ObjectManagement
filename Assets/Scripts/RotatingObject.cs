@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace Catlike.ObjectManagement
 {
-    public class RotatingObject : PersistableObject
+    public class RotatingObject : GameLevelObject
     {
         [SerializeField] private Vector3 _angularVelocity;
 
-        private void FixedUpdate()
+        public override void GameUpdate()
         {
             transform.Rotate(_angularVelocity * Time.deltaTime);
         }

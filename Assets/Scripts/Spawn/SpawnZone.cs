@@ -5,7 +5,7 @@ using Random = UnityEngine.Random;
 
 namespace Catlike.ObjectManagement
 {
-    public abstract class SpawnZone : PersistableObject
+    public abstract class SpawnZone : GameLevelObject
     {
         [System.Serializable]
         public struct SpawnConfiguration
@@ -77,7 +77,7 @@ namespace Catlike.ObjectManagement
 
         public abstract Vector3 SpawnPoint { get; }
 
-        private void FixedUpdate()
+        public override void GameUpdate()
         {
             _spawnProgress += Time.deltaTime * _spawnSpeed;
             while (_spawnProgress >= 1f)

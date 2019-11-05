@@ -123,6 +123,7 @@ public class GameController : PersistableObject
         {
             shape.GameUpdate();
         }
+        GameLevel.Current.GameUpdate();
         _inGameUpdateLoop = false;
 
         _creationProgress += Time.deltaTime * CreationSpeed;
